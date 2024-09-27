@@ -32,7 +32,7 @@ Project.init(
       allowNull: false,
     },
     budget: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER, // or DataTypes.FLOAT, or DataTypes.INTEGER
       allowNull: false,
     },
     deadline: {

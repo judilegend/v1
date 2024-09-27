@@ -43,7 +43,7 @@ User.init(
     },
     role: {
       type: DataTypes.ENUM("user", "admin", "client"),
-      defaultValue: "admin",
+      defaultValue: "client",
     },
     createdAt: {
       type: DataTypes.DATE,

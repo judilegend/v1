@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "./SIdebar";
+import Sidebar from "../components/SIdebar";
 
 interface Email {
   id: number;

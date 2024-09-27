@@ -9,9 +9,9 @@ import { useSelector } from "react-redux";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./pages/Dashboard";
 import { RootState } from "./store";
-import Message from "./pages/Message";
-import Chat from "./components/Chat";
-import Messagerie from "./components/Messagerie";
+import Message from "./pages/Project";
+import Chat from "./pages/Chat";
+import Messagerie from "./pages/Messagerie";
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated

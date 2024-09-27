@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
-import Sidebar from "./SIdebar";
+import Sidebar from "../components/SIdebar";
 import { getMessages, sendMessage } from "../services/messageService";
 
 interface Message {

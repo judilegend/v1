@@ -4,7 +4,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
-
+import projectRoutes from "./routes/projectRoutes";
 import sequelize from "./config/database";
 const cors = require("cors");
 const messageRoutes = require("./routes/messageRoutes");
@@ -26,6 +26,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user/", userRoutes);
+app.use("/api/project/", projectRoutes);
 app.use("/api/messages", messageRoutes);
 
 io.on("connection", (socket) => {
