@@ -23,10 +23,13 @@ export const loginUser = async (email: string, password: string) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: user.id, email: user.email, role: user.role }, // Assurez-vous que le rôle est inclus
     process.env.JWT_SECRET!,
-    { expiresIn: "1d" }
+    { expiresIn: "1h" }
   );
+  console.log("====================================");
+  console.log(token);
+  console.log("====================================");
 
   return { user, token };
 };

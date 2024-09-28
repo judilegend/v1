@@ -12,8 +12,7 @@ export const fetchProjects = createAsyncThunk<
   void,
   { state: RootState }
 >("projects/fetchAll", async () => {
-  const response = await getAllProjects();
-  return response;
+  return await getAllProjects();
 });
 
 export const addProject = createAsyncThunk<
@@ -21,8 +20,7 @@ export const addProject = createAsyncThunk<
   Omit<Project, "id">,
   { state: RootState }
 >("projects/add", async (project) => {
-  const response = await createProject(project);
-  return response;
+  return await createProject(project);
 });
 
 export const editProject = createAsyncThunk<
@@ -30,8 +28,7 @@ export const editProject = createAsyncThunk<
   { id: number; project: Partial<Project> },
   { state: RootState }
 >("projects/edit", async ({ id, project }) => {
-  const response = await updateProject(id, project);
-  return response;
+  return await updateProject(id, project);
 });
 
 export const removeProject = createAsyncThunk<

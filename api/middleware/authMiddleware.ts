@@ -9,31 +9,34 @@ interface AuthRequest extends Request {
   };
 }
 
-export const authenticate = (
+// Middleware d'authentification
+export const authenticate = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const [, token] = authHeader.split(" ");
-
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Authorization token required" });
+    }
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: number;
       email: string;
       role: string;
     };
+    console.log("Decoded JWT:", decoded); // Log pour voir ce qui est décodé
     req.user = decoded;
+    console.log(req.user);
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    console.error("JWT verification failed:", error.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
+// Middleware d'autorisation (vérifier le rôle admin)
 export const authorizeAdmin = (
   req: AuthRequest,
   res: Response,
@@ -42,6 +45,23 @@ export const authorizeAdmin = (
   if (req.user && req.user.role === "admin") {
     next();
   } else {
-    res.status(403).json({ message: "Access denied. Admin role required." });
+    console.log(req.user?.role);
+    return res
+      .status(403)
+      .json({ message: "Access denied. Admin role required." });
+  }
+};
+export const authorizeClient = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.user && req.user.role === "client") {
+    next();
+  } else {
+    // console.log(req.user?.role);
+    return res
+      .status(403)
+      .json({ message: "Access denied. client or admin  role required." });
   }
 };

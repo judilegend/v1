@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import Sidebar from "../components/SIdebar";
-import { getMessages, sendMessage } from "../services/messageService";
+import { getMessages } from "../services/messageService";
 
 interface Message {
   id: number;

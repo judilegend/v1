@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { clearToken } from "../store/authSlice";
+import { logoutUser } from "../store/authSlice";
 import Sidebar from "../components/SIdebar";
 
 function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
-
   const handleLogout = () => {
-    dispatch(clearToken());
+    dispatch(logoutUser() as any);
     navigate("/");
   };
-
-
 
   // Mock project data (replace with actual data fetching logic)
   const projectProgress = 65;
@@ -35,7 +31,7 @@ function Dashboard() {
       <Sidebar />
       <div className="flex-1 p-8">
         <h1 className="text-2xl mb-4">Welcome to Dashboard!</h1>
-        
+
         {/* Project Progress Section */}
         <div className="mb-8">
           <h2 className="text-xl mb-4">Project Progress</h2>
@@ -73,15 +69,6 @@ function Dashboard() {
             ))}
           </ul>
         </div>
-
-
-
-        <button
-          onClick={handleLogout}
-          className="w-full p-2 bg-red-500 text-white rounded"
-        >
-          Logout
-        </button>
       </div>
     </div>
   );
