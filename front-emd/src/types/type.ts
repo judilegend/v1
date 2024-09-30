@@ -13,3 +13,10 @@ export interface RootState {
     error: string | null;
   };
 }
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  isOnline: boolean;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../store";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,7 @@ const Sidebar: React.FC = () => {
     navigate("/");
   };
   const { user } = useSelector((state: RootState) => state.auth);
+
   const isActive = (path: string) => location.pathname === path;
 
   const menuItems = [

@@ -8,11 +8,6 @@ function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutUser() as any);
-    navigate("/");
-  };
-
   // Mock project data (replace with actual data fetching logic)
   const projectProgress = 65;
   const projectPhases = [
