@@ -16,7 +16,9 @@ function Project() {
   const { projects, status, error } = useSelector(
     (state: RootState) => state.projects
   );
+  // const { user } = useSelector((state: RootState) => state.auth);
   const { user } = useSelector((state: RootState) => state.auth);
+
   const [formData, setFormData] = useState<Omit<ProjectType, "id">>({
     title: "",
     description: "",
@@ -29,9 +31,9 @@ function Project() {
     if (status === "idle") {
       dispatch(fetchProjects() as any);
     }
-    console.log("====================================");
-    console.log(user);
-    console.log("====================================");
+    // console.log(user);
+    // console.log(userId);
+    console.log(projects);
   }, [status, dispatch]);
 
   const handleInputChange = (
@@ -114,36 +116,36 @@ function Project() {
               {editingId ? "Update Project" : "Add Project"}
             </button>
           </form>
-          {user && user.role === "admin" && (
-            <div className="space-y-4 ">
-              {projects.map((project) => (
-                <div key={project.id} className="border p-4 rounded-md">
-                  <h2 className="text-xl font-semibold">{project.title}</h2>
-                  <p>{project.description}</p>
-                  <p>Budget: ${project.budget}</p>
-                  <p>
-                    Deadline: {new Date(project.deadline).toLocaleDateString()}
-                  </p>
-                  <div className="mt-2">
-                    <button
-                      onClick={() => handleEdit(project)}
-                      className="bg-yellow-500 text-white py-1 px-2 rounded-md mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="bg-red-500 text-white py-1 px-2 rounded-md"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+
+          {!user && <div>user not found</div>}
         </div>
       </div>
+      {user && user.role === "admin" && (
+        <div className="space-y-4 ">
+          {projects.map((project) => (
+            <div key={project.id} className="border p-4 rounded-md">
+              <h2 className="text-xl font-semibold">{project.title}</h2>
+              <p>{project.description}</p>
+              <p>Budget: ${project.budget}</p>
+              <p>Deadline: {new Date(project.deadline).toLocaleDateString()}</p>
+              <div className="mt-2">
+                <button
+                  onClick={() => handleEdit(project)}
+                  className="bg-yellow-500 text-white py-1 px-2 rounded-md mr-2"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(project.id)}
+                  className="bg-red-500 text-white py-1 px-2 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

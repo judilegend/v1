@@ -29,9 +29,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { login, register, logout } from "../services/authService";
 import { RootState } from "./index";
-
+import { jwtDecode } from "jwt-decode";
 interface AuthState {
-  user: any | null;
+  user: { id: number; email: string; role: string } | null;
   token: string | null;
   isAuthenticated: boolean;
   status: "idle" | "loading" | "succeeded" | "failed";
@@ -39,7 +39,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: null,
+  user: localStorage.getItem("token")
+    ? jwtDecode(localStorage.getItem("token")!)
+    : null,
   token: localStorage.getItem("token"),
   isAuthenticated: !!localStorage.getItem("token"),
   status: "idle",
@@ -84,11 +86,12 @@ const authSlice = createSlice({
         loginUser.fulfilled,
         (state, action: PayloadAction<{ user: any; token: string }>) => {
           state.status = "succeeded";
-          state.user = action.payload.user;
+          state.user = jwtDecode(action.payload.token);
           state.token = action.payload.token;
           state.isAuthenticated = true;
         }
       )
+
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Login failed";

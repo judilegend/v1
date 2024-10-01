@@ -17,7 +17,6 @@ const Sidebar: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const isActive = (path: string) => location.pathname === path;
-
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: "📊" },
     {

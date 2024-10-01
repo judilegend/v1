@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,7 +16,10 @@ const App: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-
+  // const { user } = useSelector((state: RootState) => state.auth);
+  // useEffect(() => {
+  //   console.log(user);
+  // });
   return (
     <Router>
       <div className="min-h-screen bg-gray-100 ">

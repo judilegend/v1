@@ -27,9 +27,7 @@ export const loginUser = async (email: string, password: string) => {
     process.env.JWT_SECRET!,
     { expiresIn: "1h" }
   );
-  console.log("====================================");
   console.log(token);
-  console.log("====================================");
 
   return { user, token };
 };
