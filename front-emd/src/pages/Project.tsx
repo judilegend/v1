@@ -141,6 +141,18 @@ function Project() {
                 >
                   Delete
                 </button>
+                <button
+                  // onClick={() => handleEdit(project)}
+                  className="bg-yellow-500 text-white py-1 px-2 rounded-md mr-2"
+                >
+                  manage
+                </button>
+                <button
+                  // onClick={() => handleEdit(project)}
+                  className="bg-yellow-500 text-white py-1 px-2 rounded-md mr-2"
+                >
+                  voir plus
+                </button>
               </div>
             </div>
           ))}
