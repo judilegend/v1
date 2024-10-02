@@ -5,11 +5,7 @@ import { authenticate } from "../middleware/authMiddleware";
 const router = express.Router();
 
 router.post("/", authenticate, tacheController.createTache);
-router.get(
-  "/activite/:activiteId",
-  authenticate,
-  tacheController.getTachesByActiviteId
-);
+router.get("/:activiteId", authenticate, tacheController.getTachesByActiviteId);
 router.put("/:id", authenticate, tacheController.updateTache);
 router.delete("/:id", authenticate, tacheController.deleteTache);
 

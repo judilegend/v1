@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { RootState } from "../store";
 import { useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dispatch(logoutUser() as any);
     navigate("/");
   };
@@ -20,7 +21,7 @@ const Sidebar: React.FC = () => {
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: "📊" },
     {
-      path: "/messages",
+      path: "/projects",
       label: "New project",
       icon: "✉️",
       hideForRoles: ["user"],

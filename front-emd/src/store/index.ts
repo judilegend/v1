@@ -3,6 +3,9 @@ import authReducer from "./authSlice";
 import projectReducer from "./projectSlice";
 import userReducer from "./userSlice";
 import workPackageReducer from "./workpackageSlice";
+import activiteReducer from "./activiteSlice";
+import tacheReducer from "./tacheSlice";
+import tempsReducer from "./tempsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +13,9 @@ export const store = configureStore({
     projects: projectReducer,
     users: userReducer,
     workPackages: workPackageReducer,
+    activities: activiteReducer,
+    taches: tacheReducer,
+    temps: tempsReducer,
   },
 });
 

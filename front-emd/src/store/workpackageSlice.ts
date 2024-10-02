@@ -1,57 +1,49 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { WorkPackage } from "../types/type";
-
-interface WorkPackageState {
-  workPackages: WorkPackage[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: WorkPackageState = {
-  workPackages: [],
-  status: "idle",
-  error: null,
-};
+import * as workpackageService from "../services/workpackageService";
 
 export const fetchWorkPackages = createAsyncThunk(
   "workPackages/fetchWorkPackages",
   async (projectId: number) => {
-    const response = await axios.get(`/api/workpackages/project/${projectId}`);
-    return response.data;
+    return await workpackageService.fetchWorkPackages(projectId);
   }
 );
 
 export const addWorkPackage = createAsyncThunk(
   "workPackages/addWorkPackage",
   async (workPackage: Omit<WorkPackage, "id">) => {
-    const response = await axios.post("/api/workpackages", workPackage);
-    return response.data;
+    return await workpackageService.createWorkPackage(workPackage);
   }
 );
 
 export const updateWorkPackage = createAsyncThunk(
   "workPackages/updateWorkPackage",
-  async (workPackage: WorkPackage) => {
-    const response = await axios.put(
-      `/api/workpackages/${workPackage.id}`,
-      workPackage
-    );
-    return response.data;
+  async ({
+    id,
+    workPackage,
+  }: {
+    id: number;
+    workPackage: Partial<WorkPackage>;
+  }) => {
+    return await workpackageService.updateWorkPackage(id, workPackage);
   }
 );
 
-export const deleteWorkPackage = createAsyncThunk(
-  "workPackages/deleteWorkPackage",
+export const removeWorkPackage = createAsyncThunk(
+  "workPackages/removeWorkPackage",
   async (id: number) => {
-    await axios.delete(`/api/workpackages/${id}`);
+    await workpackageService.deleteWorkPackage(id);
     return id;
   }
 );
 
 const workPackageSlice = createSlice({
   name: "workPackages",
-  initialState,
+  initialState: {
+    workPackages: [] as WorkPackage[],
+    status: "idle" as "idle" | "loading" | "succeeded" | "failed",
+    error: null as string | null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -77,7 +69,7 @@ const workPackageSlice = createSlice({
           state.workPackages[index] = action.payload;
         }
       })
-      .addCase(deleteWorkPackage.fulfilled, (state, action) => {
+      .addCase(removeWorkPackage.fulfilled, (state, action) => {
         state.workPackages = state.workPackages.filter(
           (wp) => wp.id !== action.payload
         );

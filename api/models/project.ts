@@ -1,16 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
-// interface ProjectAttributes {
-//   id?: number;
-//   title: string;
-//   description: string;
-//   budget: number;
-//   deadline: Date;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
 class Project extends Model {
   public id!: number;
   public title!: string;

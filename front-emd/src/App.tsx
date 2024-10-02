@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -8,21 +8,22 @@ import {
 import { useSelector } from "react-redux";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./pages/Dashboard";
-import { RootState } from "./store";
-import Message from "./pages/Project";
+import Project from "./pages/Project";
+import ProjectManagement from "./pages/ProjectManagement";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
+// import WorkflowManagement from "./pages/workfowManagement";
+import ActivityManagement from "./pages/ActiviteManagement";
+import { RootState } from "./store";
+
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  // const { user } = useSelector((state: RootState) => state.auth);
-  // useEffect(() => {
-  //   console.log(user);
-  // });
+
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100 ">
+      <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route
             path="/"
@@ -35,8 +36,14 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
           />
           <Route
-            path="/messages"
-            element={isAuthenticated ? <Message /> : <Navigate to="/" />}
+            path="/projects"
+            element={isAuthenticated ? <Project /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/project/:projectId/manage"
+            element={
+              isAuthenticated ? <ProjectManagement /> : <Navigate to="/" />
+            }
           />
           <Route
             path="/chat"
@@ -45,6 +52,12 @@ const App: React.FC = () => {
           <Route
             path="/messagerie"
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/workpackage/:workflowId/manage"
+            element={
+              isAuthenticated ? <ActivityManagement /> : <Navigate to="/" />
+            }
           />
         </Routes>
       </div>

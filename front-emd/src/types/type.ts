@@ -44,3 +44,10 @@ export interface Tache {
   status: "todo" | "in_progress" | "done";
 }
 
+export interface Temps {
+  id: number;
+  tacheId: number;
+  date: Date;
+  pomodoroCount: number;
+  notes: string;
+}

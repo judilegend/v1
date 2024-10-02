@@ -4,13 +4,13 @@ import { authenticate } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", authenticate, workpackageController.createWorkPackage);
+router.post("/", workpackageController.createWorkPackage);
 router.get(
   "/project/:projectId",
-  authenticate,
+  // authenticate,
   workpackageController.getWorkPackagesByProjectId
 );
-router.put("/:id", authenticate, workpackageController.updateWorkPackage);
-router.delete("/:id", authenticate, workpackageController.deleteWorkPackage);
+router.put("/:id",  workpackageController.updateWorkPackage);
+router.delete("/:id", workpackageController.deleteWorkPackage);
 
 export default router;
