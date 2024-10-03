@@ -11,15 +11,31 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(addActivite({
-      name, description, workPackageId,
-      status: "todo"
-    }));
-    setName("");
-    setDescription("");
+    setError(null);
+    if (!name.trim() || !description.trim()) {
+      setError("Name and description are required");
+      return;
+    }
+    try {
+      await dispatch(
+        addActivite({
+          workPackageId,
+          name,
+          description,
+          status: "todo",
+        })
+      ).unwrap();
+      setName("");
+      setDescription("");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Failed to create activity"
+      );
+    }
   };
 
   return (
@@ -45,6 +61,7 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
       >
         Add Activity
       </button>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );
 };

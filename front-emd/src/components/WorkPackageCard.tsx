@@ -84,6 +84,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   updateWorkPackage,
   removeWorkPackage,
@@ -127,9 +128,9 @@ const WorkPackageCard: React.FC<Props> = ({ workPackage }) => {
     dispatch(removeWorkPackage(workPackage.id));
   };
 
-  const handleManage = () => {
-    navigate(`/workpackage/${workPackage.id}/manage`);
-  };
+  // const handleManage = () => {
+  //   navigate(`/workpackage/${workPackage.id}/manage`);
+  // };
 
   return (
     <div className="border p-2 mb-2 rounded">
@@ -180,16 +181,21 @@ const WorkPackageCard: React.FC<Props> = ({ workPackage }) => {
           >
             Delete
           </button>
-          <button
+          {/* <button
             onClick={handleManage}
             className="bg-purple-500 text-white px-2 py-1 rounded"
           >
             Manage
-          </button>
+          </button> */}
+          <Link
+            to={`/project/${workPackage.projectId}/workpackage/${workPackage.id}/manage`}
+            className="bg-purple-500 text-white px-2 py-1 rounded"
+          >
+            Manage Activities
+          </Link>
         </div>
       </div>
     </div>
   );
 };
-
 export default WorkPackageCard;

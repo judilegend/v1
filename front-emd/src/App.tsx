@@ -13,7 +13,7 @@ import ProjectManagement from "./pages/ProjectManagement";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
 // import WorkflowManagement from "./pages/workfowManagement";
-import ActivityManagement from "./pages/ActiviteManagement";
+import ActiviteManagement from "./pages/ActiviteManagement";
 import { RootState } from "./store";
 
 const App: React.FC = () => {
@@ -54,10 +54,8 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
           />
           <Route
-            path="/workpackage/:workflowId/manage"
-            element={
-              isAuthenticated ? <ActivityManagement /> : <Navigate to="/" />
-            }
+            path="/project/:projectId/workpackage/:workPackageId/manage"
+            element={<ActiviteManagement />}
           />
         </Routes>
       </div>

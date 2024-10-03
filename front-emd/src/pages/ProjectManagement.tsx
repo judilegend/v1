@@ -18,6 +18,8 @@ const ProjectManagement: React.FC = () => {
     if (projectId) {
       dispatch(fetchWorkPackages(parseInt(projectId)));
     }
+    console.log("le project id c'est ", projectId);
+
   }, [dispatch, projectId]);
 
   if (status === "loading") return <div>Loading...</div>;

@@ -8,7 +8,6 @@ class Activite extends Model {
   public description!: string;
   public status!: string;
 }
-
 Activite.init(
   {
     id: {
@@ -26,7 +25,7 @@ Activite.init(
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     status: {
       type: DataTypes.ENUM("todo", "in_progress", "done"),

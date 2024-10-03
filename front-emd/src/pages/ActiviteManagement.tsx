@@ -8,17 +8,20 @@ import AddActivityForm from "../components/AddActivityForm";
 import Sidebar from "../components/SIdebar";
 
 const ActivityManagement: React.FC = () => {
-  const { workPackageId } = useParams<{ workPackageId: string }>();
+  const { projectId, workPackageId } = useParams<{
+    projectId: string;
+    workPackageId: string;
+  }>();
   const dispatch = useDispatch<AppDispatch>();
   const { activities, status, error } = useSelector(
     (state: RootState) => state.activities
   );
-
   useEffect(() => {
-    if (workPackageId) {
+    if (projectId && workPackageId) {
       dispatch(fetchActivites(parseInt(workPackageId)));
     }
-  }, [dispatch, workPackageId]);
+    console.log("Project ID:", projectId, "WorkPackage ID:", workPackageId);
+  }, [dispatch, projectId, workPackageId]);
 
   if (status === "loading") return <div>Loading...</div>;
   if (status === "failed") return <div>Error: {error}</div>;

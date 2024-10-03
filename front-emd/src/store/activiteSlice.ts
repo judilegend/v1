@@ -9,13 +9,23 @@ export const fetchActivites = createAsyncThunk(
   }
 );
 
-export const addActivite = createAsyncThunk(
-  "activities/addActivite",
-  async (activite: Omit<Activite, "id">) => {
+export const addActivite = createAsyncThunk<
+  Activite,
+  Omit<Activite, "id">,
+  { rejectValue: string }
+>("activities/addActivite", async (activite, { rejectWithValue }) => {
+  try {
     return await activityService.createActivite(activite);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return rejectWithValue(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (error as any).response?.data?.message || "Failed to create activity"
+      );
+    }
+    return rejectWithValue("Failed to create activity");
   }
-);
-
+});
 export const updateActivite = createAsyncThunk(
   "activities/updateActivite",
   async ({ id, activite }: { id: number; activite: Partial<Activite> }) => {
