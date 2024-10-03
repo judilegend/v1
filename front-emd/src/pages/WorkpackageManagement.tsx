@@ -29,7 +29,7 @@ const ProjectManagement: React.FC = () => {
     <main className="flex">
       <Sidebar />
       <div className="p-4 w-[1500px]">
-        <h1 className="text-2xl font-bold mb-4">Project Management</h1>
+        <h1 className="text-2xl font-bold mb-4">Workpackage Management</h1>
         <AddWorkPackageForm projectId={parseInt(projectId!)} />
         <div className="flex space-x-4 mt-4">
           <WorkPackageColumn

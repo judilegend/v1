@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
-import ProjectManagement from "./pages/ProjectManagement";
+import ProjectManagement from "./pages/WorkpackageManagement";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
 // import WorkflowManagement from "./pages/workfowManagement";
