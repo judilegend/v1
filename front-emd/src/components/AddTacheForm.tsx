@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addActivite } from "../store/activiteSlice";
+import { addTache } from "../store/tacheSlice";
 import { AppDispatch } from "../store";
 
 interface Props {
-  workPackageId: number;
+  activiteId: number;
 }
 
-const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
+const AddTacheForm: React.FC<Props> = ({ activiteId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -22,8 +22,8 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
     }
     try {
       await dispatch(
-        addActivite({
-          workPackageId,
+        addTache({
+          activiteId,
           name,
           description,
           status: "todo",
@@ -32,9 +32,7 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
       setName("");
       setDescription("");
     } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create activity"
-      );
+      setError(err instanceof Error ? err.message : "Failed to create task");
     }
   };
 
@@ -44,7 +42,7 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Activity Name"
+        placeholder="Task Name"
         className="w-full p-2 mb-2 border rounded"
         required
       />
@@ -59,11 +57,11 @@ const AddActivityForm: React.FC<Props> = ({ workPackageId }) => {
         type="submit"
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
-        Add Activity
+        Add Task
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );
 };
 
-export default AddActivityForm;
+export default AddTacheForm;

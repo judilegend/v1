@@ -13,6 +13,8 @@ import ProjectManagement from "./pages/WorkpackageManagement";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
 // import WorkflowManagement from "./pages/workfowManagement";
+import TacheManagement from "./pages/TacheManagement";
+
 import ActiviteManagement from "./pages/ActiviteManagement";
 import { RootState } from "./store";
 
@@ -56,6 +58,10 @@ const App: React.FC = () => {
           <Route
             path="/project/:projectId/workpackage/:workPackageId/manage"
             element={<ActiviteManagement />}
+          />
+          <Route
+            path="/project/:projectId/activite/:activiteId/manage"
+            element={<TacheManagement />}
           />
         </Routes>
       </div>

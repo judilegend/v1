@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { updateActivite, removeActivite } from "../store/activiteSlice";
-import { Activite } from "../types/type";
+import { updateTache, removeTache } from "../store/tacheSlice";
+import { Tache } from "../types/type";
 import { AppDispatch } from "../store";
 
 interface Props {
-  activity: Activite;
+  tache: Tache;
 }
 
-const ActivityCard: React.FC<Props> = ({ activity }) => {
+const TacheCard: React.FC<Props> = ({ tache }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(activity.name);
+  const [editedName, setEditedName] = useState(tache.name);
 
   const handleStatusChange = (newStatus: "todo" | "in_progress" | "done") => {
     dispatch(
-      updateActivite({
-        id: activity.id,
-        activite: { ...activity, status: newStatus },
+      updateTache({
+        id: tache.id,
+        tache: { ...tache, status: newStatus },
       })
     );
   };
@@ -29,16 +28,16 @@ const ActivityCard: React.FC<Props> = ({ activity }) => {
 
   const handleSave = () => {
     dispatch(
-      updateActivite({
-        id: activity.id,
-        activite: { name: editedName },
+      updateTache({
+        id: tache.id,
+        tache: { name: editedName },
       })
     );
     setIsEditing(false);
   };
 
   const handleDelete = () => {
-    dispatch(removeActivite(activity.id));
+    dispatch(removeTache(tache.id));
   };
 
   return (
@@ -51,12 +50,12 @@ const ActivityCard: React.FC<Props> = ({ activity }) => {
           className="w-full p-1 mb-2 border rounded"
         />
       ) : (
-        <h3 className="text-lg font-semibold">{activity.name}</h3>
+        <h3 className="text-lg font-semibold">{tache.name}</h3>
       )}
-      <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+      <p className="text-sm text-gray-600 mb-2">{tache.description}</p>
       <div className="flex justify-between items-center">
         <select
-          value={activity.status}
+          value={tache.status}
           onChange={(e) =>
             handleStatusChange(
               e.target.value as "todo" | "in_progress" | "done"
@@ -90,16 +89,10 @@ const ActivityCard: React.FC<Props> = ({ activity }) => {
           >
             Delete
           </button>
-          <Link
-            to={`/project/${activity.workPackageId}/activite/${activity.id}/manage`}
-            className="bg-purple-500 text-white px-2 py-1 rounded"
-          >
-            Manage Tasks
-          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default ActivityCard;
+export default TacheCard;
