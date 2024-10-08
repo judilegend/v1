@@ -9,13 +9,11 @@ import { useSelector } from "react-redux";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
-import ProjectManagement from "./pages/WorkpackageManagement";
+import Layout from "./components/layout/Layout";
+import KanbanBoard from "./components/KanbanBoard";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
-// import WorkflowManagement from "./pages/workfowManagement";
-import TacheManagement from "./pages/TacheManagement";
-
-import ActiviteManagement from "./pages/ActiviteManagement";
+import QuoteRequest from "./pages/QuoteRequest";
 import { RootState } from "./store";
 
 const App: React.FC = () => {
@@ -25,7 +23,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      <Layout>
         <Routes>
           <Route
             path="/"
@@ -42,10 +40,8 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Project /> : <Navigate to="/" />}
           />
           <Route
-            path="/project/:projectId/manage"
-            element={
-              isAuthenticated ? <ProjectManagement /> : <Navigate to="/" />
-            }
+            path="/project/:projectId/kanban"
+            element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/" />}
           />
           <Route
             path="/chat"
@@ -56,15 +52,11 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
           />
           <Route
-            path="/project/:projectId/workpackage/:workPackageId/manage"
-            element={<ActiviteManagement />}
-          />
-          <Route
-            path="/project/:projectId/activite/:activiteId/manage"
-            element={<TacheManagement />}
+            path="/request-quote"
+            element={isAuthenticated ? <QuoteRequest /> : <Navigate to="/" />}
           />
         </Routes>
-      </div>
+      </Layout>
     </Router>
   );
 };

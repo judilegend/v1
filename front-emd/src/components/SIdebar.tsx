@@ -1,72 +1,80 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
 import { logoutUser } from "../store/authSlice";
+import { SidebarItem } from "./layout/SidebarItem";
+import { Button } from "./ui/Button";
+import { FiLogOut, FiPlus } from "react-icons/fi";
+import {
+  MdDashboard,
+  MdFolder,
+  MdViewKanban,
+  MdTimer,
+  MdChat,
+  MdEmail,
+  MdSettings,
+  MdRequestQuote,
+} from "react-icons/md";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const handleLogout = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dispatch(logoutUser() as any);
-    navigate("/");
-  };
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const isActive = (path: string) => location.pathname === path;
+  const handleLogout = () => {
+    // dispatch(logoutUser());
+    navigate("/");
+  };
+
   const menuItems = [
-    { path: "/dashboard", label: "Dashboard", icon: "📊" },
-    {
-      path: "/projects",
-      label: "New project",
-      icon: "✉️",
-      hideForRoles: ["user"],
-    },
-    { path: "/messagerie", label: "Couriel", icon: "✉️" },
-    { path: "/chat", label: "Chat", icon: "💬" },
-    { path: "/settings", label: "Settings", icon: "⚙️" },
+    { path: "/dashboard", label: "Dashboard", icon: MdDashboard },
+    { path: "/projects", label: "Projects", icon: MdFolder },
+    { path: "/kanban", label: "Kanban", icon: MdViewKanban },
+    { path: "/sprints", label: "Sprints", icon: MdTimer },
+    { path: "/messages", label: "Messages", icon: MdChat },
+    { path: "/email", label: "Email", icon: MdEmail },
+    { path: "/settings", label: "Settings", icon: MdSettings },
   ];
 
   return (
-    <div className="bg-gray-800 text-white w-64 min-h-screen p-4">
+    <aside className="bg-white text-gray-800 w-64 min-h-screen p-4 flex flex-col shadow-smooth">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Project Manager</h1>
+        <h1 className="text-2xl font-bold text-primary-600">Project Manager</h1>
       </div>
-      <nav>
-        <ul>
-          {menuItems.map(
-            (item) =>
-              (!item.hideForRoles ||
-                !user ||
-                !item.hideForRoles.includes(user.role)) && (
-                <li key={item.path} className="mb-4">
-                  <Link
-                    to={item.path}
-                    className={`flex items-center py-2 px-4 rounded transition-colors duration-200 ${
-                      isActive(item.path)
-                        ? "bg-blue-500 text-white"
-                        : "hover:bg-gray-700"
-                    }`}
-                  >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.label}
-                  </Link>
-                </li>
-              )
-          )}
+      <div className="mb-6 px-2">
+        <Button
+          variant="accent"
+          className="w-full flex items-center justify-center "
+          onClick={() => navigate("/request-quote")}
+        >
+          <FiPlus className="mr-2" />
+          Demander devis
+        </Button>
+      </div>
+      <nav className="flex-grow">
+        <ul className="space-y-2">
+          {menuItems.map((item) => (
+            <SidebarItem
+              key={item.path}
+              {...item}
+              isActive={location.pathname === item.path}
+            />
+          ))}
         </ul>
       </nav>
-      <button
-        onClick={handleLogout}
-        className="w-full p-2 bg-red-500 text-white rounded"
-      >
-        Logout
-      </button>
-    </div>
+      {/* <div className="mt-auto px-2">
+        <Button
+          variant="danger"
+          className="w-full flex items-center justify-center "
+          onClick={handleLogout}
+        >
+          <FiLogOut className="mr-2" />
+          Logout
+        </Button>
+      </div> */}
+    </aside>
   );
 };
 
