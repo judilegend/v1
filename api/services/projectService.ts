@@ -1,23 +1,23 @@
 import Project from "../models/project";
+import WorkPackage from "../models/workpackage";
 
-export const creerProject = async (
-  title: string,
-  description: string,
-  budget: number,
-  deadline: Date
-) => {
-  const project = await Project.create({
-    title,
-    description,
-    budget,
-    deadline,
-  });
+export const createProject = async (projectData: Partial<Project>) => {
+  const project = await Project.create(projectData);
   return project;
 };
 
 export const getAllProjects = async () => {
-  const projects = Project.findAll();
+  const projects = await Project.findAll({
+    include: [{ model: WorkPackage, as: "workPackages" }],
+  });
   return projects;
+};
+
+export const getProjectById = async (id: number) => {
+  const project = await Project.findByPk(id, {
+    include: [{ model: WorkPackage, as: "workPackages" }],
+  });
+  return project;
 };
 
 export const updateProject = async (id: number, data: Partial<Project>) => {

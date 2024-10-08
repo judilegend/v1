@@ -1,11 +1,24 @@
 import WorkPackage from "../models/workpackage";
+import Activity from "../models/activite";
 
 export const createWorkPackage = async (data: Partial<WorkPackage>) => {
-  return await WorkPackage.create(data);
+  const workPackage = await WorkPackage.create(data);
+  return workPackage;
 };
 
 export const getWorkPackagesByProjectId = async (projectId: number) => {
-  return await WorkPackage.findAll({ where: { projectId } });
+  const workPackages = await WorkPackage.findAll({
+    where: { projectId },
+    include: [{ model: Activity, as: "activities" }],
+  });
+  return workPackages;
+};
+
+export const getWorkPackageById = async (id: number) => {
+  const workPackage = await WorkPackage.findByPk(id, {
+    include: [{ model: Activity, as: "activities" }],
+  });
+  return workPackage;
 };
 
 export const updateWorkPackage = async (
@@ -14,7 +27,7 @@ export const updateWorkPackage = async (
 ) => {
   const workPackage = await WorkPackage.findByPk(id);
   if (!workPackage) throw new Error("WorkPackage not found");
-  return await workPackage.update(data);
+  return workPackage.update(data);
 };
 
 export const deleteWorkPackage = async (id: number) => {
