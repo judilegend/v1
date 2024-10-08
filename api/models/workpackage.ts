@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database";
+import Activity from "./activite";
 
 class WorkPackage extends Model {
   public id!: number;
@@ -38,5 +39,12 @@ WorkPackage.init(
     modelName: "WorkPackage",
   }
 );
+
+WorkPackage.hasMany(Activity, {
+  foreignKey: "workPackageId",
+  as: "activities",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 export default WorkPackage;

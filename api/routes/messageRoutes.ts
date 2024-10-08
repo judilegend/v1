@@ -1,18 +1,17 @@
-// const express = require("express");
-// const messageController = require("../controllers/messageController");
-
-// const router = express.Router();
-
-// router.get("/", messageController.getMessages);
-// router.post("/", messageController.createMessage);
-
-// module.exports = router;
 import express from "express";
 import * as messageController from "../controllers/messageController";
 
 const router = express.Router();
 
-router.get("/:userId", messageController.getMessages);
 router.post("/", messageController.createMessage);
+router.get("/channel/:channelId", messageController.getMessagesForChannel);
+router.get("/:messageId", messageController.getMessageById);
+router.put("/:messageId", messageController.updateMessage);
+router.delete("/:messageId", messageController.deleteMessage);
+router.get("/task/:taskId", messageController.getMessagesForTask);
+router.post("/direct", messageController.createDirectMessage);
+router.post("/channel", messageController.createChannelMessage);
+router.get("/direct/:userId1/:userId2", messageController.getDirectMessages);
+router.get("/channel/:channelId", messageController.getChannelMessages);
 
 export default router;
