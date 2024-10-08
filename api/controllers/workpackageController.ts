@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as workpackageService from "../services/workpackageService";
+import Activity from "../models/activite";
 
 export const createWorkPackage = async (req: Request, res: Response) => {
   try {
@@ -25,6 +26,22 @@ export const getWorkPackagesByProjectId = async (
     res
       .status(400)
       .json({ message: "Error fetching work packages", error: error.message });
+  }
+};
+
+export const getWorkPackageById = async (req: Request, res: Response) => {
+  try {
+    const workPackage = await workpackageService.getWorkPackageById(
+      parseInt(req.params.id)
+    );
+    if (!workPackage) {
+      return res.status(404).json({ message: "Work package not found" });
+    }
+    res.json(workPackage);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error fetching work package", error: error.message });
   }
 };
 

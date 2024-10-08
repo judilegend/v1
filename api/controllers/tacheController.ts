@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as tacheService from "../services/tacheService";
+import * as eisenhowerService from "../services/eisenhowerService";
 
 export const createTache = async (req: Request, res: Response) => {
   try {
@@ -9,6 +10,17 @@ export const createTache = async (req: Request, res: Response) => {
     res
       .status(400)
       .json({ message: "Error creating tache", error: error.message });
+  }
+};
+export const getTachesBySprintId = async (req: Request, res: Response) => {
+  try {
+    const { sprintId } = req.params;
+    const taches = await tacheService.getTachesBySprintId(parseInt(sprintId));
+    res.json(taches);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error fetching taches", error: error.message });
   }
 };
 
@@ -47,5 +59,33 @@ export const deleteTache = async (req: Request, res: Response) => {
     res
       .status(400)
       .json({ message: "Error deleting tache", error: error.message });
+  }
+};
+export const categorizeTask = async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.params;
+    const { urgency, importance } = req.body;
+    const task = await eisenhowerService.categorizeTask(
+      parseInt(taskId),
+      urgency,
+      importance
+    );
+    res.json(task);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error categorizing task", error: error.message });
+  }
+};
+
+export const getTasksByQuadrant = async (req: Request, res: Response) => {
+  try {
+    const quadrants = await eisenhowerService.getTasksByQuadrant();
+    res.json(quadrants);
+  } catch (error) {
+    res.status(400).json({
+      message: "Error fetching tasks by quadrant",
+      error: error.message,
+    });
   }
 };
