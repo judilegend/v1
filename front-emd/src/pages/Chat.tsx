@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import io from "socket.io-client";
 import { RootState, AppDispatch } from "../store";
-import Sidebar from "../components/SIdebar";
 import { fetchUsers, updateUserStatus } from "../store/userSlice";
 
 const socket = io("http://localhost:5000");
@@ -83,7 +82,6 @@ const Chat: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar />
       <div className="flex-1 flex flex-col">
         <div className="bg-white shadow-md p-4">
           <h1 className="text-2xl font-bold">Chat</h1>

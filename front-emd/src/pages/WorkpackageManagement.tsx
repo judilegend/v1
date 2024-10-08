@@ -5,7 +5,7 @@ import { fetchWorkPackages } from "../store/workpackageSlice";
 import { RootState, AppDispatch } from "../store";
 import WorkPackageColumn from "../components/WorkPackageColumn";
 import AddWorkPackageForm from "../components/AddWorkPackage";
-import Sidebar from "../components/SIdebar";
+import Sidebar from "../components/Sidebar";
 
 const ProjectManagement: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -19,7 +19,6 @@ const ProjectManagement: React.FC = () => {
       dispatch(fetchWorkPackages(parseInt(projectId)));
     }
     console.log("le project id c'est ", projectId);
-
   }, [dispatch, projectId]);
 
   if (status === "loading") return <div>Loading...</div>;

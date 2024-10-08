@@ -7,7 +7,6 @@ import {
   editProject,
   removeProject,
 } from "../store/projectSlice";
-import Sidebar from "../components/SIdebar";
 import { Project as ProjectType } from "../types/type";
 import { RootState, AppDispatch } from "../store";
 
@@ -67,7 +66,6 @@ function Project() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar />
       <div className="flex-1 p-10 overflow-y-auto">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
@@ -140,7 +138,7 @@ function Project() {
                       Delete
                     </button>
                     <Link
-                      to={`/project/${project.id}/manage`}
+                      to={`/project/${project.id}/kanban`}
                       className="bg-blue-500 text-white py-1 px-2 rounded-md mr-2"
                     >
                       Manage

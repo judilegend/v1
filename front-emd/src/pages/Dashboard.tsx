@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../store/authSlice";
-import Sidebar from "../components/SIdebar";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -23,7 +22,6 @@ function Dashboard() {
 
   return (
     <div className="flex">
-      <Sidebar />
       <div className="flex-1 p-8">
         <h1 className="text-2xl mb-4">Welcome to Dashboard!</h1>
 
