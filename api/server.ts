@@ -7,8 +7,11 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import activiteRoutes from "./routes/activiteRoutes";
+import pomodoroRoutes from "./routes/pomodoroRoutes";
 import workPackageRoutes from "./routes/workpackageRoutes";
+import sprintRoutes from "./routes/sprintRoutes";
 import tacheRoutes from "./routes/tacheRoutes";
+// import tempsRoutes from "./routes/pomodoroRoutes"
 import sequelize from "./config/database";
 import Message from "./models/message";
 
@@ -29,8 +32,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/tache", tacheRoutes);
 app.use("/api/workpackage", workPackageRoutes);
 app.use("/api/project", projectRoutes);
+app.use("/api/sprints", sprintRoutes);
 app.use("/api/activite", activiteRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/pomodoro", pomodoroRoutes);
 
 io.on("connection", (socket) => {
   console.log("New client connected");

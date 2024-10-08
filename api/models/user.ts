@@ -1,7 +1,8 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database";
 import bcrypt from "bcrypt";
-
+import Tache from "./tache";
+import Message from "./message";
 class User extends Model {
   public id!: number;
   public username!: string;
@@ -43,17 +44,7 @@ User.init(
     },
     role: {
       type: DataTypes.ENUM("user", "admin", "client"),
-      defaultValue: "client",
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
+      defaultValue: "user",
     },
   },
   {
@@ -68,5 +59,17 @@ User.init(
     },
   }
 );
+User.hasMany(Tache, {
+  foreignKey: "assignedUserId",
+  as: "Taches",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+// User.hasMany(Message, {
+//   foreignKey: "senderId",
+//   as: "messages",
+//   onDelete: "CASCADE",
+//   onUpdate: "CASCADE",
+// });
 
 export default User;

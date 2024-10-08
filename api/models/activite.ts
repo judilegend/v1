@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database";
+import Tache from "./tache";
 
 class Activite extends Model {
   public id!: number;
@@ -8,6 +9,7 @@ class Activite extends Model {
   public description!: string;
   public status!: string;
 }
+
 Activite.init(
   {
     id: {
@@ -25,7 +27,7 @@ Activite.init(
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     status: {
       type: DataTypes.ENUM("todo", "in_progress", "done"),
@@ -37,5 +39,12 @@ Activite.init(
     modelName: "Activite",
   }
 );
+
+Activite.hasMany(Tache, {
+  foreignKey: "activiteId",
+  as: "Taches",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 export default Activite;

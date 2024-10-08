@@ -1,17 +1,53 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../config/database";
 
-export interface ITemps extends Document {
-  tache: Schema.Types.ObjectId;
-  date: Date;
-  pomodoroCount: number;
-  notes: string;
+class Temps extends Model {
+  public id!: number;
+  public taskId!: number;
+  public userId!: number;
+  public startTime!: Date;
+  public endTime!: Date;
+  public duration!: number;
+  public pomodoroCount!: number;
 }
 
-const TempsSchema: Schema = new Schema({
-  tache: { type: Schema.Types.ObjectId, ref: "Tache", required: true },
-  date: { type: Date, default: Date.now },
-  pomodoroCount: { type: Number, default: 0 },
-  notes: { type: String },
-});
+Temps.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    taskId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    startTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    pomodoroCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+  },
+  {
+    sequelize,
+    modelName: "Temps",
+  }
+);
 
-export default mongoose.model<ITemps>("Temps", TempsSchema);
+export default Temps;
