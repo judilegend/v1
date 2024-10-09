@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Temps } from "../types/type";
+import { Temps } from "../types/types";
 import * as tempsService from "../services/tempsService";
 
 export const fetchTemps = createAsyncThunk(

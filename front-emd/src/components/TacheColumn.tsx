@@ -1,5 +1,5 @@
 import React from "react";
-import { Tache } from "../types/type";
+import { Tache } from "../types/types";
 import TacheCard from "./TacheCard";
 import { DroppableProvided } from "react-beautiful-dnd";
 

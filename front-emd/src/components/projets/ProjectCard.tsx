@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
-import { FiClock, FiTag, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiClock, FiTag, FiEdit, FiTrash2, FiLayout } from "react-icons/fi";
 import { ProjectModal } from "./ProjectModal";
-
+import { Link } from "react-router-dom";
 interface ProjectCardProps {
   id: number;
   title: string;
@@ -80,7 +80,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
           <span className="text-sm text-gray-500">{progress}% complete</span>
         </div>
-        <div className="flex justify-end space-x-2">
+        {/* <div className="flex justify-end space-x-2">
           <button
             onClick={handleEdit}
             className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
@@ -93,6 +93,29 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           >
             <FiTrash2 />
           </button>
+        </div> */}
+        <div className="flex justify-between items-center mt-4">
+          <Link
+            to={`/kanban/${id}`}
+            className="flex items-center text-blue-600 hover:text-blue-800"
+          >
+            <FiLayout className="mr-2" />
+            Kanban Board
+          </Link>
+          <div className="flex space-x-2">
+            <button
+              onClick={handleEdit}
+              className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+            >
+              <FiEdit />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="p-2 text-red-600 hover:bg-red-100 rounded-full"
+            >
+              <FiTrash2 />
+            </button>
+          </div>
         </div>
       </Card>
       <ProjectModal

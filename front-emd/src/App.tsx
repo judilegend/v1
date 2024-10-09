@@ -10,7 +10,7 @@ import AuthForm from "./components/AuthForm";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
 import Layout from "./components/layout/Layout";
-import KanbanBoard from "./components/KanbanBoard";
+import KanbanBoard from "./components/kanban/KanbanBoard";
 import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
 import QuoteRequest from "./pages/QuoteRequest";
@@ -40,7 +40,7 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Project /> : <Navigate to="/" />}
           />
           <Route
-            path="/project/:projectId/kanban"
+            path="/kanban/:projectId"
             element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/" />}
           />
           <Route

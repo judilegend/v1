@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addActivite } from "../store/activiteSlice";
+import { addActivite } from "../store/slices/activiteSlice";
 import { AppDispatch } from "../store";
 
 interface Props {

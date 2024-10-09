@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { updateActivite, removeActivite } from "../store/activiteSlice";
-import { Activite } from "../types/type";
+import { updateActivite, removeActivite } from "../store/slices/activiteSlice";
+import { Activite } from "../types/types";
 import { AppDispatch } from "../store";
 
 interface Props {

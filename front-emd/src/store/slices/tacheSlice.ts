@@ -1,33 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Tache } from "../types/type";
-import * as tacheService from "../services/tacheService";
+import * as tacheService from "../../services/tacheService";
+import { Tache } from "../../types/types";
 
 export const fetchTaches = createAsyncThunk(
   "taches/fetchTaches",
   async (activiteId: number) => {
-    return await tacheService.fetchTaches(activiteId);
+    const response = await tacheService.getTaches(activiteId);
+    return response.data;
   }
 );
 
 export const addTache = createAsyncThunk(
   "taches/addTache",
   async (tache: Omit<Tache, "id">) => {
-    return await tacheService.createTache(tache);
+    const response = await tacheService.createTache(tache);
+    return response.data;
   }
 );
-
-export const updateTache = createAsyncThunk(
-  "taches/updateTache",
-  async ({ id, tache }: { id: number; tache: Partial<Tache> }) => {
-    return await tacheService.updateTache(id, tache);
-  }
-);
-
 export const removeTache = createAsyncThunk(
   "taches/removeTache",
   async (id: number) => {
     await tacheService.deleteTache(id);
     return id;
+  }
+);
+export const updateTache = createAsyncThunk(
+  "taches/updateTache",
+  async ({ id, tache }: { id: number; tache: Partial<Tache> }) => {
+    const response = await tacheService.updateTache(id, tache);
+    return response.data;
   }
 );
 
@@ -50,15 +51,13 @@ const tacheSlice = createSlice({
       })
       .addCase(fetchTaches.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Unknown error";
+        state.error = action.error.message || null;
       })
       .addCase(addTache.fulfilled, (state, action) => {
         state.taches.push(action.payload);
       })
       .addCase(updateTache.fulfilled, (state, action) => {
-        const index = state.taches.findIndex(
-          (tache) => tache.id === action.payload.id
-        );
+        const index = state.taches.findIndex((t) => t.id === action.payload.id);
         if (index !== -1) {
           state.taches[index] = action.payload;
         }

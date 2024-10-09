@@ -1,5 +1,5 @@
 import React from "react";
-import { WorkPackage } from "../types/type";
+import { WorkPackage } from "../types/types";
 import WorkPackageCard from "./WorkPackageCard";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 interface Props {

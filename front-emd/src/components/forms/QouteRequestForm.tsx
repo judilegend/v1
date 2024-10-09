@@ -53,7 +53,7 @@ const QuoteRequestForm: React.FC = () => {
       onSubmit={handleSubmit}
     >
       {({ isSubmitting }) => (
-        <Form className=" w-[90vw] md:w-[50vw] p-6 rounded-lg">
+        <Form className=" w-[90vw] md:w-[50vw] p-6 mx-auto rounded-lg">
           <div className="mb-4">
             <label
               htmlFor="title"

@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import {
   updateWorkPackage,
   removeWorkPackage,
-} from "../store/workpackageSlice";
-import { WorkPackage } from "../types/type";
+} from "../store/slices/workpackageSlice";
+import { WorkPackage } from "../types/types";
 import { AppDispatch } from "../store";
 import { Draggable } from "react-beautiful-dnd";
 

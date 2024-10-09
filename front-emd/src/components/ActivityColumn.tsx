@@ -1,5 +1,5 @@
 import React from "react";
-import { Activite } from "../types/type";
+import { Activite } from "../types/types";
 import ActivityCard from "./ActivityCard";
 import { DroppableProvided } from "react-beautiful-dnd";
 

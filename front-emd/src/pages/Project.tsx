@@ -4,10 +4,10 @@ import { ProjectCard } from "../components/projets/ProjectCard";
 import {
   fetchProjects,
   addProject,
-  editProject,
+  updateProject,
   removeProject,
-} from "../store/projectSlice";
-import { Project as ProjectType } from "../types/type";
+} from "../store/slices/projectSlice";
+import { Project as ProjectType } from "../types/types";
 import { RootState, AppDispatch } from "../store";
 
 function Project() {
@@ -23,7 +23,7 @@ function Project() {
   }, [status, dispatch]);
 
   const handleEdit = (id: number, data: Partial<ProjectType>) => {
-    dispatch(editProject({ id, project: data }));
+    dispatch(updateProject({ id, project: data }));
   };
 
   const handleDelete = (id: number) => {
@@ -39,10 +39,15 @@ function Project() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
           <ProjectCard
-            status={"ongoing"} ticketCount={0} clientName={""} progress={0} key={project.id}
+            status={"ongoing"}
+            ticketCount={0}
+            clientName={""}
+            progress={0}
+            key={project.id}
             {...project}
             onEdit={handleEdit}
-            onDelete={handleDelete}/>
+            onDelete={handleDelete}
+          />
         ))}
       </div>
     </div>

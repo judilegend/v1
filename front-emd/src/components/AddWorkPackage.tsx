@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addWorkPackage } from "../store/workpackageSlice";
+import { addWorkPackage } from "../store/slices/workpackageSlice";
 import { AppDispatch } from "../store";
 
 interface Props {

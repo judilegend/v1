@@ -1,18 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { WorkPackage } from "../types/type";
-import * as workpackageService from "../services/workpackageService";
+import * as workPackageService from "../../services/workpackageService";
+import { WorkPackage } from "../../types/types";
 
 export const fetchWorkPackages = createAsyncThunk(
   "workPackages/fetchWorkPackages",
   async (projectId: number) => {
-    return await workpackageService.fetchWorkPackages(projectId);
+    const response = await workPackageService.getWorkPackages(projectId);
+    return response.data;
   }
 );
 
 export const addWorkPackage = createAsyncThunk(
   "workPackages/addWorkPackage",
   async (workPackage: Omit<WorkPackage, "id">) => {
-    return await workpackageService.createWorkPackage(workPackage);
+    const response = await workPackageService.createWorkPackage(workPackage);
+    return response.data;
   }
 );
 
@@ -25,23 +27,25 @@ export const updateWorkPackage = createAsyncThunk(
     id: number;
     workPackage: Partial<WorkPackage>;
   }) => {
-    return await workpackageService.updateWorkPackage(id, workPackage);
+    const response = await workPackageService.updateWorkPackage(
+      id,
+      workPackage
+    );
+    return response.data;
   }
 );
-
 export const removeWorkPackage = createAsyncThunk(
   "workPackages/removeWorkPackage",
   async (id: number) => {
-    await workpackageService.deleteWorkPackage(id);
+    await workPackageService.deleteWorkPackage(id);
     return id;
   }
 );
-
 const workPackageSlice = createSlice({
   name: "workPackages",
   initialState: {
     workPackages: [] as WorkPackage[],
-    status: "idle" as "idle" | "loading" | "succeeded" | "failed",
+    status: "idle",
     error: null as string | null,
   },
   reducers: {},
@@ -61,6 +65,11 @@ const workPackageSlice = createSlice({
       .addCase(addWorkPackage.fulfilled, (state, action) => {
         state.workPackages.push(action.payload);
       })
+      .addCase(removeWorkPackage.fulfilled, (state, action) => {
+        state.workPackages = state.workPackages.filter(
+          (wp) => wp.id !== action.payload
+        );
+      })
       .addCase(updateWorkPackage.fulfilled, (state, action) => {
         const index = state.workPackages.findIndex(
           (wp) => wp.id === action.payload.id
@@ -68,11 +77,6 @@ const workPackageSlice = createSlice({
         if (index !== -1) {
           state.workPackages[index] = action.payload;
         }
-      })
-      .addCase(removeWorkPackage.fulfilled, (state, action) => {
-        state.workPackages = state.workPackages.filter(
-          (wp) => wp.id !== action.payload
-        );
       });
   },
 });
