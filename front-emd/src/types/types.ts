@@ -1,3 +1,6 @@
+import { ReactNode } from "react";
+import { Column } from "./Kanban";
+
 export interface Project {
   id: number;
   title: string;
@@ -21,6 +24,8 @@ export interface User {
   isOnline: boolean;
 }
 export interface WorkPackage {
+  title: ReactNode;
+  activities: any;
   id: number;
   projectId: number;
   name: string;
@@ -50,4 +55,16 @@ export interface Temps {
   date: Date;
   pomodoroCount: number;
   notes: string;
+}
+export interface KanbanItem {
+  id: number;
+  title: string;
+  description: string;
+  status: "todo" | "in_progress" | "done";
+}
+
+export interface WorkPackageData {
+  workPackages: { [key: number]: WorkPackage };
+  columns: { [key: string]: Column };
+  columnOrder: string[];
 }

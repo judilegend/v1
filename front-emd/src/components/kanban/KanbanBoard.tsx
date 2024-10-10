@@ -1,226 +1,177 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { RootState, AppDispatch } from "../../store";
-import {
-  fetchWorkPackages,
-  updateWorkPackage,
-} from "../../store/slices/workpackageSlice";
-import {
-  fetchActivites,
-  updateActivite,
-} from "../../store/slices/activiteSlice";
-import { fetchTaches, updateTache } from "../../store/slices/tacheSlice";
+import React, { useState } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import WorkPackageColumn from "../WorkPackageColumn";
-import ActivityColumn from "../ActivityColumn";
-import TacheColumn from "../TacheColumn";
-import { useParams } from "react-router-dom";
+import AddWorkPackage from "../AddWorkPackage";
+import {
+  WorkPackageData,
+  WorkPackage,
+  Activite,
+  Tache,
+} from "../../types/types";
+import { handleDragEnd } from "../../utils/dragAndDrop";
+import { KanbanColumn, KanbanItem } from "../../types/Kanban";
+
+const workflowStatuses = [
+  "To Do",
+  "In Progress",
+  "To Test",
+  "To Fix",
+  "Completed",
+];
+
+const initialData: WorkPackageData = {
+  workPackages: {},
+  columns: workflowStatuses.reduce(
+    (acc, status) => ({
+      ...acc,
+      [status]: { id: status, title: status, workPackageIds: [] },
+    }),
+    {}
+  ),
+  columnOrder: workflowStatuses,
+};
 
 const KanbanBoard: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { projectId } = useParams<{ projectId: string }>();
+  const [data, setData] = useState<WorkPackageData>(initialData);
 
-  const [activeTab, setActiveTab] = useState<
-    "workpackages" | "activities" | "tasks"
-  >("workpackages");
+  const onDragEnd = (result: DropResult) => {
+    const newData = handleDragEnd(result, {
+      items: data.workPackages,
+      columns: data.columns,
+      columnOrder: data.columnOrder,
+    });
+    setData({
+      workPackages: Object.fromEntries(
+        Object.entries(newData.items).map(([key, workPackage]) => [
+          key,
+          {
+            ...workPackage,
+            content: workPackage.name,
+            tags: [],
+          }
+        ])
+      ) as { [key: string]: KanbanItem },
+      columns: Object.fromEntries(
+        Object.entries(newData.columns).map(([key, column]) => [
+          key,
+          { ...column, itemIds: column.workPackageIds }
+        ])
+      ) as { [key: string]: KanbanColumn },
+      columnOrder: newData.columnOrder,
+    });
+  };
+  const handleAddWorkPackage = (name: string) => {
+    const newWorkPackage: WorkPackage = {
+      id: Date.now(),
+      projectId: 0, // You might want to set this dynamically
+      name,
+      description: "",
+      status: "todo",
+      activities: [],
+    };
 
-  const workPackages = useSelector(
-    (state: RootState) => state.workPackages.workPackages
-  );
-  const activites = useSelector(
-    (state: RootState) => state.activities.activites
-  );
-  const taches = useSelector((state: RootState) => state.taches.taches);
+    setData((prevData) => ({
+      ...prevData,
+      workPackages: {
+        ...prevData.workPackages,
+        [newWorkPackage.id]: newWorkPackage,
+      },
+      columns: {
+        ...prevData.columns,
+        "To Do": {
+          ...prevData.columns["To Do"],
+          workPackageIds: [
+            ...prevData.columns["To Do"].workPackageIds,
+            newWorkPackage.id.toString(),
+          ],
+        },
+      },
+    }));
+  };
 
-  useEffect(() => {
-    if (projectId) {
-      dispatch(fetchWorkPackages(parseInt(projectId)));
-      dispatch(fetchActivites(parseInt(projectId)));
-      dispatch(fetchTaches(parseInt(projectId)));
-    }
-  }, [dispatch, projectId]);
+  const handleAddActivity = (wpId: number, activityName: string) => {
+    setData((prevData) => {
+      const workPackage = prevData.workPackages[wpId];
+      const newActivity: Activite = {
+        id: Date.now(),
+        workPackageId: wpId,
+        name: activityName,
+        description: "",
+        status: "todo",
+      };
+      return {
+        ...prevData,
+        workPackages: {
+          ...prevData.workPackages,
+          [wpId]: {
+            ...workPackage,
+            activities: [...workPackage.activities, newActivity],
+          },
+        },
+      };
+    });  };
 
-  const onDragEnd = (result: any) => {
-    const { destination, source, draggableId, type } = result;
-
-    if (!destination) {
-      return;
-    }
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
-
-    if (type === "workpackage") {
-      const newStatus = destination.droppableId;
-      dispatch(
-        updateWorkPackage({
-          id: parseInt(draggableId),
-          workPackage: { status: newStatus },
-        })
-      );
-    } else if (type === "activity") {
-      const newStatus = destination.droppableId;
-      dispatch(
-        updateActivite({
-          id: parseInt(draggableId),
-          activite: { status: newStatus },
-        })
-      );
-    } else if (type === "task") {
-      const newStatus = destination.droppableId;
-      dispatch(
-        updateTache({ id: parseInt(draggableId), tache: { status: newStatus } })
-      );
-    }
+  const handleAddTask = (
+    wpId: number,
+    activityId: number,
+    taskName: string
+  ) => {
+    setData((prevData) => {
+      const workPackage = prevData.workPackages[wpId];
+      const updatedActivities = workPackage.activities.map((activity: { id: number; tasks: any; }) => {
+        if (activity.id === activityId) {
+          const newTask: Tache = {
+            id: Date.now(),
+            activiteId: activityId,
+            name: taskName,
+            description: "",
+            status: "todo",
+          };
+          return {
+            ...activity,
+            tasks: [...activity.tasks, newTask],
+          };
+        }
+        return activity;
+      });
+      return {
+        ...prevData,
+        workPackages: {
+          ...prevData.workPackages,
+          [wpId]: {
+            ...workPackage,
+            activities: updatedActivities,
+          },
+        },
+      };
+    });
   };
 
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <button
-          className={`px-4 py-2 mr-2 ${
-            activeTab === "workpackages"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
-          }`}
-          onClick={() => setActiveTab("workpackages")}
-        >
-          Work Packages
-        </button>
-        <button
-          className={`px-4 py-2 mr-2 ${
-            activeTab === "activities"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200"
-          }`}
-          onClick={() => setActiveTab("activities")}
-        >
-          Activities
-        </button>
-        <button
-          className={`px-4 py-2 ${
-            activeTab === "tasks" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setActiveTab("tasks")}
-        >
-          Tasks
-        </button>
-      </div>
+    <div className="bg-gray-100 min-h-screen p-8">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">
+        Project Management Board
+      </h1>
+      <AddWorkPackage onAddWorkPackage={handleAddWorkPackage} />
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex space-x-4">
-          {activeTab === "workpackages" && (
-            <>
-              <Droppable droppableId="todo" type="workpackage">
-                {(provided) => (
-                  <WorkPackageColumn
-                    title="To Do"
-                    workPackages={workPackages.filter(
-                      (wp) => wp.status === "todo"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="in_progress" type="workpackage">
-                {(provided) => (
-                  <WorkPackageColumn
-                    title="In Progress"
-                    workPackages={workPackages.filter(
-                      (wp) => wp.status === "in_progress"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="done" type="workpackage">
-                {(provided) => (
-                  <WorkPackageColumn
-                    title="Done"
-                    workPackages={workPackages.filter(
-                      (wp) => wp.status === "done"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-            </>
-          )}
-          {activeTab === "activities" && (
-            <>
-              <Droppable droppableId="todo" type="activity">
-                {(provided) => (
-                  <ActivityColumn
-                    title="To Do"
-                    activities={activites.filter(
-                      (a: { status: string }) => a.status === "todo"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="in_progress" type="activity">
-                {(provided) => (
-                  <ActivityColumn
-                    title="In Progress"
-                    activities={activites.filter(
-                      (a: { status: string }) => a.status === "in_progress"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="done" type="activity">
-                {(provided) => (
-                  <ActivityColumn
-                    title="Done"
-                    activities={activites.filter(
-                      (a: { status: string }) => a.status === "done"
-                    )}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-            </>
-          )}
-          {activeTab === "tasks" && (
-            <>
-              <Droppable droppableId="todo" type="task">
-                {(provided) => (
-                  <TacheColumn
-                    title="To Do"
-                    taches={taches.filter((t) => t.status === "todo")}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="in_progress" type="task">
-                {(provided) => (
-                  <TacheColumn
-                    title="In Progress"
-                    taches={taches.filter((t) => t.status === "in_progress")}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-              <Droppable droppableId="done" type="task">
-                {(provided) => (
-                  <TacheColumn
-                    title="Done"
-                    taches={taches.filter((t) => t.status === "done")}
-                    provided={provided}
-                  />
-                )}
-              </Droppable>
-            </>
-          )}
-        </div>
+        <div className="flex space-x-6 overflow-x-auto pb-8 mt-8">
+          {data.columnOrder.map((columnId) => {
+            const column = data.columns[columnId];
+            const workPackages = column.workPackageIds.map(
+              (wpId) => data.workPackages[wpId as unknown as keyof typeof data.workPackages]            );
+            return (
+              <WorkPackageColumn
+                key={column.id}
+                column={column}
+                workPackages={workPackages}
+                onAddActivity={(wpId: string, activityName: string) => handleAddActivity(Number(wpId), activityName)}
+                onAddTask={(wpId: string, activityId: string, taskName: string) => handleAddTask(Number(wpId), Number(activityId), taskName)}
+              />
+            );
+          })}        </div>
       </DragDropContext>
     </div>
   );
-};
 
+};
 export default KanbanBoard;

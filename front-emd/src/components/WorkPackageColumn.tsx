@@ -1,34 +1,47 @@
 import React from "react";
-import { WorkPackage } from "../types/types";
+import { Droppable } from "react-beautiful-dnd";
 import WorkPackageCard from "./WorkPackageCard";
-import { Droppable, DroppableProvided } from "react-beautiful-dnd";
+import { WorkPackage } from "../types/types";
+import { Column } from "../types/Kanban";
+
 interface Props {
-  title: string;
+  column: Column;
   workPackages: WorkPackage[];
-  provided: DroppableProvided;
+  onAddActivity: (wpId: string, activityTitle: string) => void;
+  onAddTask: (wpId: string, activityId: string, taskTitle: string) => void;
 }
+
 const WorkPackageColumn: React.FC<Props> = ({
-  title,
+  column,
   workPackages,
-  provided,
+  onAddActivity,
+  onAddTask,
 }) => {
   return (
-    <div
-      className="bg-gray-100 p-4 rounded-lg shadow-md w-1/3"
-      {...provided.droppableProps}
-      ref={provided.innerRef}
-    >
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      <div className="space-y-4">
-        {workPackages.map((workPackage, index) => (
-          <WorkPackageCard
-            key={workPackage.id}
-            workPackage={workPackage}
-            index={index}
-          />
-        ))}
-      </div>
-      {provided.placeholder}
+    <div className="bg-white rounded-lg shadow-md w-80 flex-shrink-0">
+      <h2 className="p-4 bg-gray-50 rounded-t-lg border-b border-gray-200 text-lg font-semibold text-gray-700">
+        {column.title}
+      </h2>
+      <Droppable droppableId={column.id} type="WORKPACKAGE">
+        {(provided) => (
+          <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            className="p-4 space-y-4 min-h-[200px]"
+          >
+            {workPackages.map((workPackage, index) => (
+              <WorkPackageCard
+                key={workPackage.id}
+                workPackage={workPackage}
+                index={index}
+                onAddActivity={onAddActivity}
+                onAddTask={onAddTask}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     </div>
   );
 };
