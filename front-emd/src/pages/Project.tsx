@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { ProjectCard } from "../components/projets/ProjectCard";
 import {
   fetchProjects,
   addProject,
-  editProject,
+  updateProject,
   removeProject,
-} from "../store/projectSlice";
-import { Project as ProjectType } from "../types/type";
+} from "../store/slices/projectSlice";
+import { Project as ProjectType } from "../types/types";
 import { RootState, AppDispatch } from "../store";
 
 function Project() {
@@ -15,15 +15,6 @@ function Project() {
   const { projects, status, error } = useSelector(
     (state: RootState) => state.projects
   );
-  const { user } = useSelector((state: RootState) => state.auth);
-
-  const [formData, setFormData] = useState<Omit<ProjectType, "id">>({
-    title: "",
-    description: "",
-    budget: 0,
-    deadline: "",
-  });
-  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === "idle") {
@@ -31,30 +22,8 @@ function Project() {
     }
   }, [status, dispatch]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === "budget" ? parseFloat(value) : value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingId) {
-      dispatch(editProject({ id: editingId, project: formData }));
-      setEditingId(null);
-    } else {
-      dispatch(addProject(formData));
-    }
-    setFormData({ title: "", description: "", budget: 0, deadline: "" });
-  };
-
-  const handleEdit = (project: ProjectType) => {
-    setFormData(project);
-    setEditingId(project.id);
+  const handleEdit = (id: number, data: Partial<ProjectType>) => {
+    dispatch(updateProject({ id, project: data }));
   };
 
   const handleDelete = (id: number) => {
@@ -65,90 +34,21 @@ function Project() {
   if (status === "failed") return <div>Error: {error}</div>;
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="flex-1 p-10 overflow-y-auto">
-        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
-            Project Management
-          </h1>
-          <form onSubmit={handleSubmit} className="space-y-6 mb-8">
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Project Title"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Project Description"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md h-32"
-              required
-            />
-            <input
-              type="number"
-              name="budget"
-              value={formData.budget}
-              onChange={handleInputChange}
-              placeholder="Budget"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-            <input
-              type="date"
-              name="deadline"
-              value={formData.deadline}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
-            >
-              {editingId ? "Update Project" : "Add Project"}
-            </button>
-          </form>
-
-          {user && user.role === "admin" && (
-            <div className="space-y-4">
-              {projects.map((project) => (
-                <div key={project.id} className="border p-4 rounded-md">
-                  <h2 className="text-xl font-semibold">{project.title}</h2>
-                  <p>{project.description}</p>
-                  <p>Budget: ${project.budget}</p>
-                  <p>
-                    Deadline: {new Date(project.deadline).toLocaleDateString()}
-                  </p>
-                  <div className="mt-2">
-                    <button
-                      onClick={() => handleEdit(project)}
-                      className="bg-yellow-500 text-white py-1 px-2 rounded-md mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="bg-red-500 text-white py-1 px-2 rounded-md mr-2"
-                    >
-                      Delete
-                    </button>
-                    <Link
-                      to={`/project/${project.id}/kanban`}
-                      className="bg-blue-500 text-white py-1 px-2 rounded-md mr-2"
-                    >
-                      Manage
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Projects</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project) => (
+          <ProjectCard
+            status={"ongoing"}
+            ticketCount={0}
+            clientName={""}
+            progress={0}
+            key={project.id}
+            {...project}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))}
       </div>
     </div>
   );

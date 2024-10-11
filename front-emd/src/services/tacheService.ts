@@ -1,39 +1,10 @@
-import axios from "axios";
-import { Tache } from "../types/type";
+import api from "./api";
+import { Tache } from "../types/types";
 
-const API_URL = "http://localhost:5000/api/tache";
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
-  //   console.log(token);
-  return { Authorization: `Bearer ${token}` };
-};
-export const fetchTaches = async (activiteId: number): Promise<Tache[]> => {
-  const response = await axios.get(`${API_URL}/${activiteId}`, {
-    headers: getAuthHeader(),
-  });
-  return response.data;
-};
-
-export const createTache = async (tache: Omit<Tache, "id">): Promise<Tache> => {
-  const response = await axios.post(API_URL, tache, {
-    headers: getAuthHeader(),
-  });
-  return response.data;
-};
-
-export const updateTache = async (
-  id: number,
-  tache: Partial<Tache>
-): Promise<Tache> => {
-  const response = await axios.put(`${API_URL}/${id}`, tache, {
-    headers: getAuthHeader(),
-  });
-  return response.data;
-};
-
-export const deleteTache = async (id: number): Promise<void> => {
-  await axios.delete(`${API_URL}/${id}`, {
-    headers: getAuthHeader(),
-  });
-};
+export const getTaches = (activiteId: number) =>
+  api.get<Tache[]>(`/tache/${activiteId}`);
+export const createTache = (tache: Omit<Tache, "id">) =>
+  api.post<Tache>("/tache", tache);
+export const updateTache = (id: number, tache: Partial<Tache>) =>
+  api.put<Tache>(`/tache/${id}`, tache);
+export const deleteTache = (id: number) => api.delete(`/tache/${id}`);

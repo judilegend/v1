@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addTache } from "../store/tacheSlice";
+import { addTache } from "../store/slices/tacheSlice";
 import { AppDispatch } from "../store";
 
 interface Props {

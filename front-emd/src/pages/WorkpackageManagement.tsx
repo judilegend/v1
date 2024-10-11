@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchWorkPackages } from "../store/workpackageSlice";
+import { fetchWorkPackages } from "../store/slices/workpackageSlice";
 import { RootState, AppDispatch } from "../store";
 import WorkPackageColumn from "../components/WorkPackageColumn";
 import AddWorkPackageForm from "../components/AddWorkPackage";

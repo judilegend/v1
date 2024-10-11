@@ -62,7 +62,7 @@
 // export const { updateUserStatus } = userSlice.actions;
 // export default userSlice.reducer;
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../types/type";
+import { User } from "../types/types";
 import { getAllUsers, updateUserOnlineStatus } from "../services/userService";
 
 export const fetchUsers = createAsyncThunk<User[]>(

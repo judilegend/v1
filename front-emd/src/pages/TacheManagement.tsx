@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { fetchTaches, updateTache } from "../store/tacheSlice";
+import { fetchTaches, updateTache } from "../store/slices/tacheSlice";
 import { RootState, AppDispatch } from "../store";
 import TacheColumn from "../components/TacheColumn";
 import AddTacheForm from "../components/AddTacheForm";

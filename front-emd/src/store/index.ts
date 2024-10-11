@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
-import projectReducer from "./projectSlice";
+import projectReducer from "./slices/projectSlice";
 import userReducer from "./userSlice";
-import workPackageReducer from "./workpackageSlice";
-import activiteReducer from "./activiteSlice";
-import tacheReducer from "./tacheSlice";
-import tempsReducer from "./tempsSlice";
+import workPackageReducer from "./slices/workpackageSlice";
+import activiteReducer from "./slices/activiteSlice";
+import tacheReducer from "./slices/tacheSlice";
+// import tempsReducer from "./";
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +15,6 @@ export const store = configureStore({
     workPackages: workPackageReducer,
     activities: activiteReducer,
     taches: tacheReducer,
-    temps: tempsReducer,
   },
 });
 

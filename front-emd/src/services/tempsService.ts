@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Temps } from "../types/type";
+import { Temps } from "../types/types";
 
 const API_URL = "http://localhost:5000/api/temps";
 const getAuthHeader = () => {
