@@ -1,3 +1,17 @@
+// import React from "react";
+
+// interface CardProps {
+//   children: React.ReactNode;
+//   className?: string;
+// }
+
+// export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
+//   return (
+//     <div className={`bg-white shadow-md rounded-lg ${className}`}>
+//       {children}
+//     </div>
+//   );
+// };
 import React from "react";
 
 interface CardProps {
@@ -5,7 +19,7 @@ interface CardProps {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
+export const Card: React.FC<CardProps> = ({ children, className }) => {
   return (
     <div className={`bg-white shadow-md rounded-lg ${className}`}>
       {children}

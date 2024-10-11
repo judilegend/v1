@@ -8,11 +8,11 @@ interface User {
 }
 
 interface AvatarGroupProps {
-  users: User[];
+  users?: User[];
   max?: number;
 }
 
-const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, max = 4 }) => {
+const AvatarGroup: React.FC<AvatarGroupProps> = ({ users = [], max = 4 }) => {
   const visibleUsers = users.slice(0, max);
   const remainingUsers = users.length - max;
 

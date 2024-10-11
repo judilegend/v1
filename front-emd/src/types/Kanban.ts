@@ -1,32 +1,28 @@
-import { WorkPackage } from "./types";
-
-export interface KanbanItem {
-  name: any;
-  id: string;
-  content: string;
-  tags: string[];
-}
-
-export interface KanbanColumn {
-  workPackageIds: any;
+export interface Task {
   id: string;
   title: string;
-  itemIds: string[];
+  description: string;
+  status: "todo" | "in-progress" | "done";
+  assignee?: string;
+  dueDate?: Date;
 }
 
-export interface KanbanData {
-  columns: { [key: string]: KanbanColumn };
-  items: { [key: string]: KanbanItem };
-  columnOrder: string[];
-}
-export interface Column {
+export interface Activity {
   id: string;
   title: string;
-  workPackageIds: string[];
+  description: string;
+  tasks: Task[];
 }
 
-export interface WorkPackageData {
-  workPackages: { [key: string]: WorkPackage };
-  columns: { [key: string]: Column };
-  columnOrder: string[];
+export interface WorkPackage {
+  id: string;
+  title: string;
+  description: string;
+  activities: Activity[];
+}
+
+export interface ProductBacklog {
+  id: string;
+  title: string;
+  workPackages: WorkPackage[];
 }
