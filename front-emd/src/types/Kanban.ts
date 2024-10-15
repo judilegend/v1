@@ -1,28 +1,26 @@
 export interface Task {
   id: string;
   title: string;
-  description: string;
-  status: "todo" | "in-progress" | "done";
-  assignee?: string;
-  dueDate?: Date;
+  description?: string;
+  status: string;
 }
 
 export interface Activity {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   tasks: Task[];
+  contributors?: string[];
+  image?: string;
 }
 
 export interface WorkPackage {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   activities: Activity[];
 }
 
-export interface ProductBacklog {
-  id: string;
-  title: string;
+export interface Backlog {
   workPackages: WorkPackage[];
 }

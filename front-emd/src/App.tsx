@@ -15,6 +15,9 @@ import Chat from "./pages/Chat";
 import Messagerie from "./pages/Messagerie";
 import QuoteRequest from "./pages/QuoteRequest";
 import { RootState } from "./store";
+import SprintManagement from "./pages/SprintManagement";
+import TaskManagement from "./pages/TaskManagement";
+import Messaging from "./pages/Messaging";
 
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
@@ -23,17 +26,25 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <AuthForm />
+          }
+        />
+      </Routes>
       <Layout>
         <Routes>
           <Route
-            path="/"
-            element={
-              isAuthenticated ? <Navigate to="/dashboard" /> : <AuthForm />
-            }
-          />
-          <Route
             path="/dashboard"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/sprints"
+            element={
+              isAuthenticated ? <SprintManagement /> : <Navigate to="/" />
+            }
           />
           <Route
             path="/projects"
@@ -52,8 +63,16 @@ const App: React.FC = () => {
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
           />
           <Route
+            path="/messages"
+            element={isAuthenticated ? <Messaging /> : <Navigate to="/" />}
+          />
+          <Route
             path="/request-quote"
             element={isAuthenticated ? <QuoteRequest /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/task-management/:activityId"
+            element={isAuthenticated ? <TaskManagement /> : <Navigate to="/" />}
           />
         </Routes>
       </Layout>
