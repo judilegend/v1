@@ -24,7 +24,7 @@ export const SprintReport: React.FC<SprintReportProps> = ({ selectedWeek }) => {
             placeholder="Enter your sprint report here..."
             className="w-full h-40"
           />
-          <Button onClick={handleSubmit} className="mt-4">
+          <Button onClick={handleSubmit} className="mt-4" variant={"secondary"}>
             Submit Report
           </Button>
         </>

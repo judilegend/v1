@@ -1,22 +1,31 @@
 export interface Task {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   status: string;
+  assignedTo: string | null;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 export interface Activity {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   tasks: Task[];
-  contributors?: string[];
-  image?: string;
+  attachments?: string[]; // You may want to add this to store attachment URLs
+  contributors: [];
 }
 
 export interface WorkPackage {
   id: string;
   title: string;
+  status: string;
+
   description?: string;
   activities: Activity[];
 }

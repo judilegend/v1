@@ -17,6 +17,7 @@ const useKanbanBoard = () => {
       id: uuidv4(),
       title,
       description: "",
+      status: "À faire",
       activities: [],
     };
     setBacklog((prev) => ({
@@ -31,6 +32,7 @@ const useKanbanBoard = () => {
       title,
       description: "",
       tasks: [],
+      contributors: [],
     };
     setBacklog((prev) => ({
       ...prev,
@@ -49,6 +51,7 @@ const useKanbanBoard = () => {
         title,
         description: "",
         status: "todo",
+        assignedTo: null,
       };
       setBacklog((prev) => ({
         ...prev,

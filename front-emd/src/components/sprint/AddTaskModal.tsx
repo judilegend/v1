@@ -19,6 +19,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onAddTask }) => {
       title,
       description,
       status: "todo",
+      assignedTo: null
     };
     onAddTask(newTask);
     onClose();

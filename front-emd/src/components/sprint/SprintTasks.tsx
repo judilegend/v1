@@ -27,7 +27,7 @@ export const SprintTasks: React.FC<SprintTasksProps> = ({ selectedWeek }) => {
               </li>
             ))}
           </ul>
-          <Button onClick={() => setIsAddingTask(true)} className="mt-4">
+          <Button variant="primary" onClick={() => setIsAddingTask(true)} className="mt-4">
             Add Task
           </Button>
           {isAddingTask && (

@@ -198,14 +198,21 @@
 //     </Modal>
 //   );
 // };
-import React, { useState } from 'react';
-import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
-import { Textarea } from '../ui/Textarea';
-import { WorkPackage, Activity, Task } from '../../types/Kanban';
-import { FaChevronDown, FaChevronRight, FaEdit, FaPlus, FaTasks, FaTrash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import AddItemForm from '../kanban/AddItemForm';
+import React, { useState } from "react";
+import { Modal } from "../ui/Modal";
+import { Button } from "../ui/Button";
+import { Textarea } from "../ui/Textarea";
+import { WorkPackage, Activity, Task } from "../../types/Kanban";
+import {
+  FaChevronDown,
+  FaChevronRight,
+  FaEdit,
+  FaPlus,
+  FaTasks,
+  FaTrash,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import AddItemForm from "../kanban/AddItemForm";
 
 interface WorkPackageModalProps {
   workPackage: WorkPackage;
@@ -220,41 +227,44 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
   onClose,
   onUpdate,
 }) => {
-  const [editedWorkPackage, setEditedWorkPackage] = useState<WorkPackage>(workPackage);
+  const [editedWorkPackage, setEditedWorkPackage] =
+    useState<WorkPackage>(workPackage);
   const [expandedActivities, setExpandedActivities] = useState<string[]>([]);
   const [isAddingActivity, setIsAddingActivity] = useState(false);
   const navigate = useNavigate();
 
   const toggleActivity = (activityId: string) => {
-    setExpandedActivities(prev =>
+    setExpandedActivities((prev) =>
       prev.includes(activityId)
-        ? prev.filter(id => id !== activityId)
+        ? prev.filter((id) => id !== activityId)
         : [...prev, activityId]
     );
   };
 
   const handleDescriptionChange = (
     value: string,
-    itemType: 'workPackage' | 'activity' | 'task',
+    itemType: "workPackage" | "activity" | "task",
     activityId?: string,
     taskId?: string
   ) => {
-    setEditedWorkPackage(prev => {
-      if (itemType === 'workPackage') {
+    setEditedWorkPackage((prev) => {
+      if (itemType === "workPackage") {
         return { ...prev, description: value };
-      } else if (itemType === 'activity') {
+      } else if (itemType === "activity") {
         return {
           ...prev,
-          activities: prev.activities.map(activity =>
-            activity.id === activityId ? { ...activity, description: value } : activity
+          activities: prev.activities.map((activity) =>
+            activity.id === activityId
+              ? { ...activity, description: value }
+              : activity
           ),
         };
       } else {
         return {
           ...prev,
-          activities: prev.activities.map(activity => ({
+          activities: prev.activities.map((activity) => ({
             ...activity,
-            tasks: activity.tasks.map(task =>
+            tasks: activity.tasks.map((task) =>
               task.id === taskId ? { ...task, description: value } : task
             ),
           })),
@@ -267,11 +277,11 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
     const newActivity: Activity = {
       id: Date.now().toString(),
       title,
-      description: '',
+      description: "",
       tasks: [],
       contributors: [],
     };
-    setEditedWorkPackage(prev => ({
+    setEditedWorkPackage((prev) => ({
       ...prev,
       activities: [...prev.activities, newActivity],
     }));
@@ -282,12 +292,13 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
     const newTask: Task = {
       id: Date.now().toString(),
       title,
-      description: '',
-      status: 'todo',
+      description: "",
+      status: "todo",
+      assignedTo: null,
     };
-    setEditedWorkPackage(prev => ({
+    setEditedWorkPackage((prev) => ({
       ...prev,
-      activities: prev.activities.map(activity =>
+      activities: prev.activities.map((activity) =>
         activity.id === activityId
           ? { ...activity, tasks: [...activity.tasks, newTask] }
           : activity
@@ -296,18 +307,23 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
   };
 
   const handleDeleteActivity = (activityId: string) => {
-    setEditedWorkPackage(prev => ({
+    setEditedWorkPackage((prev) => ({
       ...prev,
-      activities: prev.activities.filter(activity => activity.id !== activityId),
+      activities: prev.activities.filter(
+        (activity) => activity.id !== activityId
+      ),
     }));
   };
 
   const handleDeleteTask = (activityId: string, taskId: string) => {
-    setEditedWorkPackage(prev => ({
+    setEditedWorkPackage((prev) => ({
       ...prev,
-      activities: prev.activities.map(activity =>
+      activities: prev.activities.map((activity) =>
         activity.id === activityId
-          ? { ...activity, tasks: activity.tasks.filter(task => task.id !== taskId) }
+          ? {
+              ...activity,
+              tasks: activity.tasks.filter((task) => task.id !== taskId),
+            }
           : activity
       ),
     }));
@@ -327,13 +343,15 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Work Package Description</h3>
-          <Button onClick={() => {}} variant="icon">
+          <Button onClick={() => {}} variant="primary">
             <FaEdit />
           </Button>
         </div>
         <Textarea
-          value={editedWorkPackage.description || ''}
-          onChange={(e) => handleDescriptionChange(e.target.value, 'workPackage')}
+          value={editedWorkPackage.description || ""}
+          onChange={(e) =>
+            handleDescriptionChange(e.target.value, "workPackage")
+          }
           placeholder="Enter work package description"
         />
 
@@ -343,47 +361,84 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
             <div key={activity.id} className="mb-4 border rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
-                  <Button onClick={() => toggleActivity(activity.id)} variant="icon">
-                    {expandedActivities.includes(activity.id) ? <FaChevronDown /> : <FaChevronRight />}
+                  <Button
+                    onClick={() => toggleActivity(activity.id)}
+                    variant="primary"
+                    className="mr-2"
+                  >
+                    {expandedActivities.includes(activity.id) ? (
+                      <FaChevronDown />
+                    ) : (
+                      <FaChevronRight />
+                    )}
                   </Button>
                   <h4 className="text-md font-medium ml-2">{activity.title}</h4>
                 </div>
                 <div>
-                  <Button onClick={() => {}} variant="icon" className="mr-2">
+                  <Button onClick={() => {}} variant="primary" className="mr-2">
                     <FaEdit />
                   </Button>
-                  <Button onClick={() => handleManageTasks(activity.id)} variant="icon" className="mr-2">
+                  <Button
+                    onClick={() => handleManageTasks(activity.id)}
+                    variant="primary"
+                    className="mr-2"
+                  >
                     <FaTasks />
                   </Button>
-                  <Button onClick={() => handleDeleteActivity(activity.id)} variant="icon">
+                  <Button
+                    onClick={() => handleDeleteActivity(activity.id)}
+                    variant="primary"
+                  >
                     <FaTrash />
                   </Button>
                 </div>
               </div>
               {expandedActivities.includes(activity.id) && (
                 <>
-
                   <Textarea
-                    value={activity.description || ''}
-                    onChange={(e) => handleDescriptionChange(e.target.value, 'activity', activity.id)}
+                    value={activity.description || ""}
+                    onChange={(e) =>
+                      handleDescriptionChange(
+                        e.target.value,
+                        "activity",
+                        activity.id
+                      )
+                    }
                     placeholder="Enter activity description"
                     className="mb-2"
                   />
                   <h5 className="text-sm font-medium mt-2 mb-1">Tasks</h5>
                   {activity.tasks.map((task) => (
-                    <div key={task.id} className="ml-4 mb-2 flex items-center justify-between">
+                    <div
+                      key={task.id}
+                      className="ml-4 mb-2 flex items-center justify-between"
+                    >
                       <p className="text-sm font-medium">{task.title}</p>
                       <div>
-                        <Button onClick={() => {}} variant="icon" className="mr-2">
+                        <Button
+                          onClick={() => {}}
+                          variant="primary"
+                          className="mr-2"
+                        >
                           <FaEdit />
                         </Button>
-                        <Button onClick={() => handleDeleteTask(activity.id, task.id)} variant="icon">
+                        <Button
+                          onClick={() => handleDeleteTask(activity.id, task.id)}
+                          variant="primary"
+                          className="mr-2"
+                        >
                           <FaTrash />
                         </Button>
                       </div>
                     </div>
                   ))}
-                  <AddItemForm onAdd={(title) => handleAddTask(activity.id, title)} placeholder="Add Task" />
+                  <AddItemForm
+                    onAdd={(title) => handleAddTask(activity.id, title)}
+                    placeholder="Add Task"
+                    onCancel={function (): void {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
                 </>
               )}
             </div>
@@ -395,7 +450,11 @@ export const WorkPackageModal: React.FC<WorkPackageModalProps> = ({
               onCancel={() => setIsAddingActivity(false)}
             />
           ) : (
-            <Button onClick={() => setIsAddingActivity(true)} variant="secondary" className="w-full">
+            <Button
+              onClick={() => setIsAddingActivity(true)}
+              variant="secondary"
+              className="w-full"
+            >
               <FaPlus className="mr-2" /> Add Activity
             </Button>
           )}

@@ -23,17 +23,29 @@ const TaskManagement: React.FC = () => {
         title: "Task 1",
         description: "Description 1",
         status: "todo",
+        assignedTo: null,
       },
       {
         id: "2",
         title: "Task 2",
         description: "Description 2",
         status: "in_progress",
+        assignedTo: null,
       },
     ]);
     setUsers([
-      { id: "1", name: "User 1" },
-      { id: "2", name: "User 2" },
+      {
+        id: "1",
+        name: "User 1",
+        email: "",
+        role: "",
+      },
+      {
+        id: "2",
+        name: "User 2",
+        email: "",
+        role: "",
+      },
     ]);
   }, [activityId]);
 
@@ -104,7 +116,11 @@ const TaskManagement: React.FC = () => {
             onChange={(e) => setDailyReport(e.target.value)}
             placeholder="Enter your daily report"
           />
-          <Button onClick={submitDailyReport} className="mt-2">
+          <Button
+            onClick={submitDailyReport}
+            className="mt-2"
+            variant={"primary"}
+          >
             Submit Report
           </Button>
         </div>
@@ -117,13 +133,13 @@ const TaskManagement: React.FC = () => {
           {(timeLeft % 60).toString().padStart(2, "0")}
         </div>
         <div className="space-x-2">
-          <Button onClick={startPomodoro}>
+          <Button onClick={startPomodoro} variant={"secondary"}>
             <FaPlay />
           </Button>
-          <Button onClick={pausePomodoro}>
+          <Button onClick={pausePomodoro} variant={"secondary"}>
             <FaPause />
           </Button>
-          <Button onClick={stopPomodoro}>
+          <Button onClick={stopPomodoro} variant={"secondary"}>
             <FaStop />
           </Button>
         </div>
