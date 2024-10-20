@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
 import { Textarea } from "../ui/Textarea";
@@ -13,6 +14,13 @@ import {
   FaPaperclip,
 } from "react-icons/fa";
 import AddItemForm from "../kanban/AddItemForm";
+import {
+  addTache,
+  updateTache,
+  removeTache,
+  fetchTaches,
+} from "../../store/slices/tacheSlice";
+import { AppDispatch } from "../../store";
 
 interface ActivityModalProps {
   activity: Activity;
@@ -32,9 +40,23 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
   users,
 }) => {
   const navigate = useNavigate();
-  const [editedActivity, setEditedActivity] = useState<Activity>(activity);
+  const dispatch = useDispatch<AppDispatch>();
+  const [editedActivity, setEditedActivity] = useState<Activity>({
+    ...activity,
+    tasks: activity.tasks || [],
+  });
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(fetchTaches(parseInt(activity.id))).then((resultAction) => {
+        if (fetchTaches.fulfilled.match(resultAction)) {
+          setEditedActivity({ ...activity, tasks: resultAction.payload });
+        }
+      });
+    }
+  }, [isOpen, activity.id, dispatch]);
 
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
@@ -42,45 +64,81 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     setEditedActivity({ ...editedActivity, description: e.target.value });
   };
 
-  const handleAddTask = (title: string) => {
-    const newTask: Task = {
-      id: Date.now().toString(),
-      title,
-      description: "",
-      status: "todo",
-      assignedTo: null,
-    };
-    setEditedActivity({
-      ...editedActivity,
-      tasks: [...editedActivity.tasks, newTask],
-    });
-    onAddTask(editedActivity.id, newTask);
+  const handleAddTask = async (title: string) => {
+    try {
+      const newTask: Omit<Task, "id"> = {
+        title,
+        description: "",
+        status: "todo",
+        assignedTo: null,
+        activiteId: editedActivity.id,
+      };
+      const resultAction = await dispatch(addTache(newTask));
+      if (addTache.fulfilled.match(resultAction)) {
+        const createdTask = resultAction.payload;
+        setEditedActivity({
+          ...editedActivity,
+          tasks: [...editedActivity.tasks, createdTask],
+        });
+        onAddTask(editedActivity.id, createdTask);
+      }
+    } catch (error) {
+      console.error("Failed to add task:", error);
+    }
     setIsAddingTask(false);
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setEditedActivity({
-      ...editedActivity,
-      tasks: editedActivity.tasks.filter((task) => task.id !== taskId),
-    });
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const resultAction = await dispatch(removeTache(parseInt(taskId)));
+      if (removeTache.fulfilled.match(resultAction)) {
+        setEditedActivity({
+          ...editedActivity,
+          tasks: editedActivity.tasks.filter((task) => task.id !== taskId),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+    }
   };
 
-  const handleTaskDescriptionChange = (taskId: string, description: string) => {
-    setEditedActivity({
-      ...editedActivity,
-      tasks: editedActivity.tasks.map((task) =>
-        task.id === taskId ? { ...task, description } : task
-      ),
-    });
+  const handleTaskDescriptionChange = async (
+    taskId: string,
+    description: string
+  ) => {
+    try {
+      const resultAction = await dispatch(
+        updateTache({ id: parseInt(taskId), tache: { description } })
+      );
+      if (updateTache.fulfilled.match(resultAction)) {
+        setEditedActivity({
+          ...editedActivity,
+          tasks: editedActivity.tasks.map((task) =>
+            task.id === taskId ? { ...task, description } : task
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update task description:", error);
+    }
   };
 
-  const handleAssignTask = (taskId: string, userId: string) => {
-    setEditedActivity({
-      ...editedActivity,
-      tasks: editedActivity.tasks.map((task) =>
-        task.id === taskId ? { ...task, assignedTo: userId } : task
-      ),
-    });
+  const handleAssignTask = async (taskId: string, userId: string) => {
+    try {
+      const resultAction = await dispatch(
+        updateTache({ id: parseInt(taskId), tache: { assignedTo: userId } })
+      );
+      if (updateTache.fulfilled.match(resultAction)) {
+        setEditedActivity({
+          ...editedActivity,
+          tasks: editedActivity.tasks.map((task) =>
+            task.id === taskId ? { ...task, assignedTo: userId } : task
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to assign task:", error);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,13 +157,72 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     onClose();
   };
 
+  const getTaskStatusColor = (status: string) => {
+    switch (status) {
+      case "todo":
+        return "bg-yellow-200 text-yellow-800";
+      case "in_progress":
+        return "bg-blue-200 text-blue-800";
+      case "done":
+        return "bg-green-200 text-green-800";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
+  const TaskStatusBadge: React.FC<{ status: string }> = ({ status }) => (
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-semibold ${getTaskStatusColor(
+        status
+      )}`}
+    >
+      {status.replace("_", " ")}
+    </span>
+  );
+
+  const handleTaskStatusChange = async (taskId: string, status: string) => {
+    try {
+      const resultAction = await dispatch(
+        updateTache({ id: parseInt(taskId), tache: { status } })
+      );
+      if (updateTache.fulfilled.match(resultAction)) {
+        setEditedActivity({
+          ...editedActivity,
+          tasks: editedActivity.tasks.map((task) =>
+            task.id === taskId ? { ...task, status } : task
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+    }
+  };
+
+  const handleTaskPriorityChange = async (taskId: string, priority: string) => {
+    try {
+      const resultAction = await dispatch(
+        updateTache({ id: parseInt(taskId), tache: { priority } })
+      );
+      if (updateTache.fulfilled.match(resultAction)) {
+        setEditedActivity({
+          ...editedActivity,
+          tasks: editedActivity.tasks.map((task) =>
+            task.id === taskId ? { ...task, priority } : task
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update task priority:", error);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={editedActivity.title || `Activity ${editedActivity.id}`}
     >
-      <div className="space-y-4">
+      <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
         <Input
           value={editedActivity.title || ""}
           onChange={(e) =>
@@ -177,6 +294,35 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
                 placeholder="Enter task description"
                 className="w-full mt-2"
               />
+              <div className="flex items-center mt-2">
+                <span className="mr-2">Status:</span>
+                <select
+                  value={task.status}
+                  onChange={(e) =>
+                    handleTaskStatusChange(task.id, e.target.value)
+                  }
+                  className="border rounded p-1"
+                >
+                  <option value="todo">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+                <TaskStatusBadge status={task.status} />
+              </div>
+              <div className="flex items-center mt-2">
+                <span className="mr-2">Priority:</span>
+                <select
+                  value={task.priority || "medium"}
+                  onChange={(e) =>
+                    handleTaskPriorityChange(task.id, e.target.value)
+                  }
+                  className="border rounded p-1"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
             </div>
           ))}
           {isAddingTask ? (
@@ -216,3 +362,5 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
     </Modal>
   );
 };
+
+export default ActivityModal;

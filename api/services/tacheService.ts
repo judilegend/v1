@@ -16,6 +16,22 @@ export const assignTache = async (TacheId: number, userId: number) => {
 export const getTachesBySprintId = async (sprintId: number) => {
   return Tache.findAll({ where: { sprintId } });
 };
+// Add these new methods
+export const createTacheForActivite = async (
+  activiteId: number,
+  tacheData: Partial<Tache>
+) => {
+  return Tache.create({ ...tacheData, activiteId });
+};
+
+export const updateTacheAssignment = async (
+  tacheId: number,
+  userId: number | null
+) => {
+  const tache = await Tache.findByPk(tacheId);
+  if (!tache) throw new Error("Tache not found");
+  return tache.update({ assignedUserId: userId });
+};
 
 export const updateTacheStatus = async (TacheId: number, status: string) => {
   const tache = await Tache.findByPk(TacheId);

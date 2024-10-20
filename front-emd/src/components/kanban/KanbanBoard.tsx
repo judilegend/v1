@@ -1,157 +1,145 @@
-import React, { useState } from "react";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import WorkPackageColumn from "./WorkPackageColumn";
 import AddItemForm from "./AddItemForm";
-import useKanbanBoard from "../../hooks/useKanban";
-import { WorkPackage, Activity, Task, Backlog } from "../../types/Kanban";
+import { WorkPackage, Activity, Task } from "../../types/Kanban";
 import { FaPlus } from "react-icons/fa";
 import { Button } from "../ui/Button";
 import { ActivityModal } from "../modals/ActivityModal";
+import { RootState, AppDispatch } from "../../store/index";
+import {
+  fetchWorkPackages,
+  addWorkPackage,
+} from "../../store/slices/workpackageSlice";
+import { addActivite } from "../../store/slices/activiteSlice";
 
 const KanbanBoard: React.FC = () => {
-  const statusColumns = ["À faire", "En cours", "À corriger", "Complété"];
-
-  const {
-    backlog,
-    handleDragEnd,
-    addWorkPackage,
-    addActivity,
-    updateWorkPackage,
-  } = useKanbanBoard();
+  const { projectId } = useParams<{ projectId: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+  const workPackages = useSelector(
+    (state: RootState) => state.workPackages.workPackages
+  );
+  const status = useSelector((state: RootState) => state.workPackages.status);
 
   const [isAddingWorkPackage, setIsAddingWorkPackage] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
     null
   );
 
-  const onDragEnd = (result: DropResult) => {
-    handleDragEnd(result);
+  useEffect(() => {
+    if (projectId) {
+      dispatch(fetchWorkPackages(parseInt(projectId)));
+    }
+  }, [dispatch, projectId]);
+
+  const handleAddWorkPackage = async (title: string) => {
+    if (projectId) {
+      try {
+        const newWorkPackage = await dispatch(
+          addWorkPackage({
+            title,
+            projectId: parseInt(projectId),
+            activities: [],
+            status: "todo",
+            name: title,
+            description: "",
+          })
+        ).unwrap();
+        setIsAddingWorkPackage(false);
+        // Rafraîchir la liste des workpackages après l'ajout
+        dispatch(fetchWorkPackages(parseInt(projectId)));
+      } catch (error) {
+        console.error("Failed to add work package:", error);
+      }
+    }
   };
 
-  const handleAddWorkPackage = (title: string) => {
-    addWorkPackage(title);
-    setIsAddingWorkPackage(false);
+  const handleUpdateWorkPackage = (updatedWorkPackage: WorkPackage) => {
+    // Implement the logic to update a work package
+    console.log("Updating work package:", updatedWorkPackage);
+  };
+
+  const handleAddActivity = async (workPackageId: number, title: string) => {
+    if (projectId) {
+      try {
+        const newActivity = await dispatch(
+          addActivite({
+            workPackageId,
+            title,
+            description: "",
+            // Add any other required fields for the activity
+          })
+        ).unwrap();
+
+        // Optionally, you can refresh the work packages to reflect the new activity
+        dispatch(fetchWorkPackages(parseInt(projectId)));
+      } catch (error) {
+        console.error("Failed to add activity:", error);
+      }
+    }
   };
 
   const handleUpdateActivity = (updatedActivity: Activity) => {
-    const updatedBacklog: Backlog = {
-      workPackages: backlog.workPackages.map((wp) => ({
-        ...wp,
-        activities: wp.activities.map((act) =>
-          act.id === updatedActivity.id ? updatedActivity : act
-        ),
-      })),
-    };
-
-    updateWorkPackage(updatedBacklog);
+    // Implement the logic to update an activity
+    console.log("Updating activity:", updatedActivity);
   };
 
   const handleAddTask = (activityId: string, newTask: Task) => {
-    const updatedWorkPackages = backlog.workPackages.map((wp) => ({
-      ...wp,
-      activities: wp.activities.map((act) =>
-        act.id === activityId ? { ...act, tasks: [...act.tasks, newTask] } : act
-      ),
-    }));
-
-    updateWorkPackage({ ...backlog, workPackages: updatedWorkPackages });
+    // Implement the logic to add a task to an activity
+    console.log("Adding task to activity:", activityId, newTask);
   };
+
+  if (status === "loading") {
+    return <div className="p-6">Loading work packages...</div>;
+  }
+
+  if (status === "failed") {
+    return (
+      <div className="p-6 text-red-500">
+        Error loading work packages. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Product Backlog</h1>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="workPackages"
-          direction="horizontal"
-          type="COLUMN"
-        >
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="flex space-x-4 overflow-x-auto pb-8"
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        Project Kanban Board
+      </h1>
+      <div className="flex space-x-4 overflow-x-auto pb-8">
+        {workPackages.map((workPackage, index) => (
+          <WorkPackageColumn
+            key={workPackage.id}
+            workPackage={{ ...workPackage, id: workPackage.id.toString() }}
+            onAddActivity={handleAddActivity}
+            onUpdateWorkPackage={handleUpdateWorkPackage}
+            onActivityClick={setSelectedActivity}
+            index={index}
+            onWorkPackageClick={() => {
+              console.log("Work package clicked:", workPackage.id);
+            }}
+          />
+        ))}
+
+        <div className="flex-shrink-0 w-80">
+          {isAddingWorkPackage ? (
+            <AddItemForm
+              onAdd={handleAddWorkPackage}
+              placeholder="Enter Work Package Title"
+              onCancel={() => setIsAddingWorkPackage(false)}
+            />
+          ) : (
+            <Button
+              onClick={() => setIsAddingWorkPackage(true)}
+              variant="secondary"
+              className="w-full h-10 flex items-center justify-center"
             >
-              {backlog.workPackages.map(
-                (workPackage: WorkPackage, index: number) => (
-                  <WorkPackageColumn
-                    key={workPackage.id}
-                    workPackage={workPackage}
-                    index={index}
-                    onAddActivity={(title) =>
-                      addActivity(workPackage.id, title)
-                    }
-                    onUpdateWorkPackage={updateWorkPackage}
-                    onWorkPackageClick={() => {}}
-                    onActivityClick={(activity) =>
-                      setSelectedActivity(activity)
-                    }
-                  />
-                )
-              )}
-              {provided.placeholder}
-              <div className="flex-shrink-0 w-80">
-                {isAddingWorkPackage ? (
-                  <AddItemForm
-                    onAdd={handleAddWorkPackage}
-                    placeholder="Enter Work Package Title"
-                    onCancel={() => setIsAddingWorkPackage(false)}
-                  />
-                ) : (
-                  <Button
-                    onClick={() => setIsAddingWorkPackage(true)}
-                    variant="secondary"
-                    className="w-full h-10 flex items-center justify-center"
-                  >
-                    <FaPlus className="mr-2" /> Add Work Package
-                  </Button>
-                )}
-              </div>
-            </div>
+              <FaPlus className="mr-2" /> Add Work Package
+            </Button>
           )}
-        </Droppable>
-        <div className="flex space-x-4 overflow-x-auto pb-8 mt-8">
-          {statusColumns.map((status, index) => (
-            <Droppable key={status} droppableId={status} type="TASK">
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="bg-white p-4 rounded-lg shadow-md w-80 flex-shrink-0"
-                >
-                  <h2 className="text-lg font-semibold mb-4">{status}</h2>
-                  {backlog.workPackages
-                    .filter((wp) => wp.status === status)
-                    .map((workPackage, wpIndex) => (
-                      <Draggable
-                        key={workPackage.id}
-                        draggableId={workPackage.id}
-                        index={wpIndex}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="bg-gray-100 p-2 mb-2 rounded"
-                          >
-                            {workPackage.title}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
         </div>
-      </DragDropContext>
+      </div>
       {selectedActivity && (
         <ActivityModal
           activity={selectedActivity}
@@ -162,7 +150,6 @@ const KanbanBoard: React.FC = () => {
           users={[
             { id: "1", name: "User 1" },
             { id: "2", name: "User 2" },
-            // ... more users
           ]}
         />
       )}

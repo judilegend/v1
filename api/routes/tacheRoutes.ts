@@ -11,5 +11,9 @@ router.delete("/:id", tacheController.deleteTache);
 router.put("/:taskId/categorize", tacheController.categorizeTask);
 router.get("/quadrants", tacheController.getTasksByQuadrant);
 router.get("/sprint/:sprintId", tacheController.getTachesBySprintId);
+// Add these new routes
+router.post("/activite/:activiteId", tacheController.createTacheForActivite);
+router.put("/:id/assign", tacheController.assignTache);
+
 
 export default router;

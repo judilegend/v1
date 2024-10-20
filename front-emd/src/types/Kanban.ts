@@ -24,8 +24,6 @@ export interface Activity {
 export interface WorkPackage {
   id: string;
   title: string;
-  status: string;
-
   description?: string;
   activities: Activity[];
 }

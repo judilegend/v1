@@ -7,9 +7,10 @@ import Sprint from "./sprint";
 class Tache extends Model {
   public id!: number;
   public sprintId!: number | null;
-  public name!: string;
+  public title!: string;
   public description!: string;
   public status!: "todo" | "in_progress" | "done";
+  public activiteId!: number;
   public assignedUserId!: number | null;
   public estimatedPomodoros!: number;
   public completedPomodoros!: number;
@@ -29,7 +30,11 @@ Tache.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    name: {
+    activiteId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
