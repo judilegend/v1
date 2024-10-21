@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/tempsSlice";
 import projectReducer from "./slices/projectSlice";
-import userReducer from "./slices/userSlice";
+import userReducer from "./userSlice";
 import workPackageReducer from "./slices/workpackageSlice";
 import activiteReducer from "./slices/activiteSlice";
 import tacheReducer from "./slices/tacheSlice";

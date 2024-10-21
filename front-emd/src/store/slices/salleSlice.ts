@@ -24,9 +24,8 @@ const salleSlice = createSlice({
         state.salles = action.payload.data;
       })
           .addCase(createSalle.fulfilled, (state, action) => {
-            state.salles = [...state.salles, action.payload.data];
-          });
-      },
+            state.salles = [...state.salles, action.payload.data] as typeof state.salles;
+          });      },
     });
 
 export default salleSlice.reducer;
