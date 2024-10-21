@@ -28,6 +28,20 @@ export const createDirectMessage = async (req: Request, res: Response) => {
       .json({ message: "Error creating direct message", error: error.message });
   }
 };
+export const getMessagesForRoom = async (req: Request, res: Response) => {
+  try {
+    const { roomId } = req.params;
+    if (!roomId) {
+      return res.status(400).json({ message: "Room ID is required" });
+    }
+    const messages = await messageService.getMessagesForRoom(roomId);
+    res.json(messages);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching messages", error: error.message });
+  }
+};
 
 export const createChannelMessage = async (req: Request, res: Response) => {
   try {

@@ -15,8 +15,8 @@ import QuoteRequest from "./pages/QuoteRequest";
 import { RootState } from "./store";
 import SprintManagement from "./pages/SprintManagement";
 import TaskManagement from "./pages/TaskManagement";
-import Messaging from "./pages/Messaging";
-
+import Messaging from "./components/messaging/Messaging";
+import Chat from "./pages/Chat";
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -56,10 +56,10 @@ const App: React.FC = () => {
             path="/kanban/"
             element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/" />}
           />
-          {/* <Route
+          <Route
             path="/chat"
             element={isAuthenticated ? <Chat /> : <Navigate to="/" />}
-          /> */}
+          />
           {/* <Route
             path="/messagerie"
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}

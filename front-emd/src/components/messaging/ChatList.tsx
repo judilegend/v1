@@ -1,31 +1,27 @@
 import React from "react";
-import { Chat } from "../../types/Messaging";
 
-interface ChatListProps {
-  onSelectChat: (chat: Chat) => void;
+interface Contact {
+  id: string;
+  name: string;
 }
 
-const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
-  const chats: Chat[] = [
-    { id: "1", name: "John Doe", type: "direct" },
-    { id: "2", name: "Project A Room", type: "room" },
-    // Add more mock data as needed
-  ];
+interface ChatListProps {
+  contacts: Contact[];
+  onSelectContact: (contactId: string) => void;
+}
 
+const ChatList: React.FC<ChatListProps> = ({ contacts, onSelectContact }) => {
   return (
-    <div className="w-1/4 bg-white border-r">
-      <h2 className="text-xl font-semibold p-4 border-b">Chats</h2>
+    <div className="w-1/4 bg-gray-100 overflow-y-auto">
+      <h2 className="text-xl font-bold p-4">Contacts</h2>
       <ul>
-        {chats.map((chat) => (
+        {contacts.map((contact) => (
           <li
-            key={chat.id}
-            className="p-4 hover:bg-gray-100 cursor-pointer"
-            onClick={() => onSelectChat(chat)}
+            key={contact.id}
+            className="p-4 hover:bg-gray-200 cursor-pointer"
+            onClick={() => onSelectContact(contact.id)}
           >
-            <div className="font-medium">{chat.name}</div>
-            <div className="text-sm text-gray-500">
-              {chat.type === "direct" ? "Direct Message" : "Room"}
-            </div>
+            {contact.name}
           </li>
         ))}
       </ul>

@@ -1,41 +1,57 @@
 import React, { useState } from "react";
-import { Chat, Message } from "../../types/Messaging";
-import MessageList from "./MessageList";
-import MessageInput from "./MessageInput";
 
-interface MessageAreaProps {
-  selectedChat: Chat | null;
+interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  timestamp: string;
 }
 
-const MessageArea: React.FC<MessageAreaProps> = ({ selectedChat }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface MessageAreaProps {
+  messages: Message[];
+  onSendMessage: (content: string) => void;
+  selectedContact: string | null;
+}
 
-  const handleSendMessage = (content: string, attachments: File[]) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: "Current User",
-      content,
-      timestamp: new Date(),
-      attachments,
-    };
-    setMessages([...messages, newMessage]);
+const MessageArea: React.FC<MessageAreaProps> = ({
+  messages,
+  onSendMessage,
+  selectedContact,
+}) => {
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSend = () => {
+    if (newMessage.trim() && selectedContact) {
+      onSendMessage(newMessage.trim());
+      setNewMessage("");
+    }
   };
-
-  if (!selectedChat) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Select a chat to start messaging</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="bg-white p-4 border-b">
-        <h2 className="text-xl font-semibold">{selectedChat.name}</h2>
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.map((message) => (
+          <div key={message.id} className="mb-4">
+            <p>{message.content}</p>
+            <small>{new Date(message.timestamp).toLocaleString()}</small>
+          </div>
+        ))}
       </div>
-      <MessageList messages={messages} />
-      <MessageInput onSendMessage={handleSendMessage} />
+      <div className="p-4 bg-gray-100">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="Type a message..."
+        />
+        <button
+          onClick={handleSend}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 };
