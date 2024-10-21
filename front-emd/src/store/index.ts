@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./authSlice";
+import authReducer from "./slices/tempsSlice";
 import projectReducer from "./slices/projectSlice";
-import userReducer from "./userSlice";
+import userReducer from "./slices/userSlice";
 import workPackageReducer from "./slices/workpackageSlice";
 import activiteReducer from "./slices/activiteSlice";
 import tacheReducer from "./slices/tacheSlice";
-// import tempsReducer from "./";
+import directMessageReducer from "./slices/directMessageSlice";
+import salleReducer from "./slices/salleSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,8 @@ export const store = configureStore({
     workPackages: workPackageReducer,
     activities: activiteReducer,
     taches: tacheReducer,
+    directMessage: directMessageReducer,
+    salle: salleReducer,
   },
 });
 

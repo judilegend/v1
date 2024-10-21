@@ -13,5 +13,6 @@ router.post("/direct", messageController.createDirectMessage);
 router.post("/channel", messageController.createChannelMessage);
 router.get("/direct/:userId1/:userId2", messageController.getDirectMessages);
 router.get("/channel/:channelId", messageController.getChannelMessages);
+router.get("/:roomId", messageController.getMessagesForRoom);
 
 export default router;

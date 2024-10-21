@@ -1,11 +1,10 @@
 import { useState, useCallback } from "react";
 import { DropResult } from "react-beautiful-dnd";
-import { ProductBacklog, WorkPackage, Activity, Task } from "../types/Kanban";
+import { v4 as uuidv4 } from "uuid";
+import { Backlog, WorkPackage, Activity, Task } from "../types/Kanban";
 
 const useKanbanBoard = () => {
-  const [backlog, setBacklog] = useState<ProductBacklog>({
-    id: "1",
-    title: "Product Backlog",
+  const [backlog, setBacklog] = useState<Backlog>({
     workPackages: [],
   });
 
@@ -15,9 +14,10 @@ const useKanbanBoard = () => {
 
   const addWorkPackage = useCallback((title: string) => {
     const newWorkPackage: WorkPackage = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       title,
       description: "",
+      status: "À faire",
       activities: [],
     };
     setBacklog((prev) => ({
@@ -28,10 +28,11 @@ const useKanbanBoard = () => {
 
   const addActivity = useCallback((workPackageId: string, title: string) => {
     const newActivity: Activity = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       title,
       description: "",
       tasks: [],
+      contributors: [],
     };
     setBacklog((prev) => ({
       ...prev,
@@ -46,10 +47,11 @@ const useKanbanBoard = () => {
   const addTask = useCallback(
     (workPackageId: string, activityId: string, title: string) => {
       const newTask: Task = {
-        id: Date.now().toString(),
+        id: uuidv4(),
         title,
         description: "",
         status: "todo",
+        assignedTo: null,
       };
       setBacklog((prev) => ({
         ...prev,
@@ -125,6 +127,15 @@ const useKanbanBoard = () => {
     []
   );
 
+  const updateWorkPackage = (updatedWorkPackage: WorkPackage) => {
+    setBacklog((prevBacklog) => ({
+      ...prevBacklog,
+      workPackages: prevBacklog.workPackages.map((wp) =>
+        wp.id === updatedWorkPackage.id ? updatedWorkPackage : wp
+      ),
+    }));
+  };
+
   return {
     backlog,
     handleDragEnd,
@@ -133,6 +144,7 @@ const useKanbanBoard = () => {
     addTask,
     updateTask,
     deleteTask,
+    updateWorkPackage,
   };
 };
 

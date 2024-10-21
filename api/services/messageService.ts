@@ -1,11 +1,22 @@
 import Message from "../models/message";
 import User from "../models/user";
 import { Op } from "sequelize";
+import { io } from "../server";
 
-export const createMessage = async (messageData: Partial<Message>) => {
+export const createMessage = async (messageData: any) => {
   const message = await Message.create(messageData);
+  io.to(messageData.roomId).emit("new_message", message);
   return message;
 };
+export const getMessagesForRoom = async (roomId: string) => {
+  const messages = await Message.findAll({
+    where: { roomId },
+    include: [{ model: User, as: "sender", attributes: ["id", "username"] }],
+    order: [["createdAt", "ASC"]],
+  });
+  return messages;
+};
+
 export const createDirectMessage = async (
   senderId: number,
   receiverId: number,

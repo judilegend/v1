@@ -23,6 +23,37 @@ export const getTachesBySprintId = async (req: Request, res: Response) => {
       .json({ message: "Error fetching taches", error: error.message });
   }
 };
+// Add these new controller methods
+export const createTacheForActivite = async (req: Request, res: Response) => {
+  try {
+    const { activiteId } = req.params;
+    const tache = await tacheService.createTacheForActivite(
+      parseInt(activiteId),
+      req.body
+    );
+    res.status(201).json(tache);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error creating tache", error: error.message });
+  }
+};
+
+export const assignTache = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const tache = await tacheService.updateTacheAssignment(
+      parseInt(id),
+      userId
+    );
+    res.json(tache);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error assigning tache", error: error.message });
+  }
+};
 
 export const getTachesByActiviteId = async (req: Request, res: Response) => {
   try {

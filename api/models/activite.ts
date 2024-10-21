@@ -7,7 +7,6 @@ class Activite extends Model {
   public workPackageId!: number;
   public name!: string;
   public description!: string;
-  public status!: string;
 }
 
 Activite.init(
@@ -21,17 +20,13 @@ Activite.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    status: {
-      type: DataTypes.ENUM("todo", "in_progress", "done"),
-      defaultValue: "todo",
     },
   },
   {
