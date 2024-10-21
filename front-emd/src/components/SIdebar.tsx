@@ -14,6 +14,7 @@ import {
   MdChat,
   MdEmail,
   MdSettings,
+  MdAssignment,
   MdRequestQuote,
 } from "react-icons/md";
 
@@ -32,8 +33,10 @@ const Sidebar: React.FC = () => {
     { path: "/dashboard", label: "Dashboard", icon: MdDashboard },
     { path: "/projects", label: "Projects", icon: MdFolder },
     { path: "/kanban", label: "Kanban", icon: MdViewKanban },
+    { path: "/task-management", label: "Task Management", icon: MdAssignment },
     { path: "/sprints", label: "Sprints", icon: MdTimer },
     { path: "/messages", label: "Messages", icon: MdChat },
+
     { path: "/email", label: "Email", icon: MdEmail },
     { path: "/settings", label: "Settings", icon: MdSettings },
   ];

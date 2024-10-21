@@ -11,11 +11,12 @@ import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
 import Layout from "./components/layout/Layout";
 import KanbanBoard from "./components/kanban/KanbanBoard";
-import Chat from "./pages/Chat";
-import Messagerie from "./pages/Messagerie";
 import QuoteRequest from "./pages/QuoteRequest";
 import { RootState } from "./store";
-
+import SprintManagement from "./pages/SprintManagement";
+import TaskManagement from "./pages/TaskManagement";
+import Messaging from "./components/messaging/Messaging";
+import Chat from "./pages/Chat";
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
@@ -23,17 +24,25 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <AuthForm />
+          }
+        />
+      </Routes>
       <Layout>
         <Routes>
           <Route
-            path="/"
-            element={
-              isAuthenticated ? <Navigate to="/dashboard" /> : <AuthForm />
-            }
-          />
-          <Route
             path="/dashboard"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/sprints"
+            element={
+              isAuthenticated ? <SprintManagement /> : <Navigate to="/" />
+            }
           />
           <Route
             path="/projects"
@@ -44,16 +53,32 @@ const App: React.FC = () => {
             element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/" />}
           />
           <Route
+            path="/kanban/"
+            element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/" />}
+          />
+          <Route
             path="/chat"
             element={isAuthenticated ? <Chat /> : <Navigate to="/" />}
           />
-          <Route
+          {/* <Route
             path="/messagerie"
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
+          /> */}
+          <Route
+            path="/messages"
+            element={isAuthenticated ? <Messaging /> : <Navigate to="/" />}
           />
           <Route
             path="/request-quote"
             element={isAuthenticated ? <QuoteRequest /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/task-management/:activityId"
+            element={isAuthenticated ? <TaskManagement /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/task-management/"
+            element={isAuthenticated ? <TaskManagement /> : <Navigate to="/" />}
           />
         </Routes>
       </Layout>

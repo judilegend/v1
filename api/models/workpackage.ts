@@ -7,7 +7,6 @@ class WorkPackage extends Model {
   public projectId!: number;
   public name!: string;
   public description!: string;
-  public status!: string;
 }
 
 WorkPackage.init(
@@ -21,17 +20,13 @@ WorkPackage.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    status: {
-      type: DataTypes.ENUM("todo", "in_progress", "done"),
-      defaultValue: "todo",
     },
   },
   {
