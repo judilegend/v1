@@ -5,10 +5,15 @@ export const registerUser = async (
   username: string,
   email: string,
   password: string
-  // role: string
 ) => {
   const user = await User.create({ username, email, password });
-  return user;
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET!,
+    { expiresIn: "24h" }
+  );
+
+  return { user, token };
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -23,11 +28,22 @@ export const loginUser = async (email: string, password: string) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role }, // Assurez-vous que le rôle est inclus
+    { id: user.id, email: user.email, role: user.role },
     process.env.JWT_SECRET!,
-    { expiresIn: "1h" }
+    { expiresIn: "24h" }
   );
-  console.log(token);
 
-  return { user, token };
+  // Update online status
+  await user.update({ is_online: true });
+
+  return {
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      is_online: user.is_online,
+    },
+    token,
+  };
 };

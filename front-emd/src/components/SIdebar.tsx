@@ -53,7 +53,7 @@ const Sidebar: React.FC = () => {
           onClick={() => navigate("/request-quote")}
         >
           <FiPlus className="mr-2" />
-          Demander devis
+          Creer un projet
         </Button>
       </div>
       <nav className="flex-grow">

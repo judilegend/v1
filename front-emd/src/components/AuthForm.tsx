@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser } from "../store/authSlice";
 import { AppDispatch, RootState } from "../store";
-
+import { useNavigate } from "react-router-dom";
 const AuthForm: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
@@ -10,11 +10,12 @@ const AuthForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.auth);
-
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
       await dispatch(loginUser({ email, password }));
+      navigate("/dashboard");
     } else {
       await dispatch(registerUser({ username, email, password }));
     }
