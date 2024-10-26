@@ -21,7 +21,7 @@ export interface User {
   username: string;
   email: string;
   role: string;
-  isOnline: boolean;
+  is_online: boolean;
 }
 export interface WorkPackage {
   title: ReactNode;
@@ -67,4 +67,36 @@ export interface WorkPackageData {
   workPackages: { [key: number]: WorkPackage };
   columns: { [key: string]: Column };
   columnOrder: string[];
+}
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  is_online: boolean;
+}
+
+export interface Message {
+  id: number;
+  content: string;
+  senderId: number;
+  receiverId: number;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface Conversation {
+  id: number;
+  participants: User[];
+  lastMessage: Message;
+  unreadCount: number;
+}
+
+export interface DirectMessage {
+  id: number;
+  senderId: number;
+  receiverId: number;
+  content: string;
+  read: boolean;
+  timestamp: string;
 }

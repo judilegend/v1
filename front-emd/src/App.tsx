@@ -15,7 +15,9 @@ import QuoteRequest from "./pages/QuoteRequest";
 import { RootState } from "./store";
 import SprintManagement from "./pages/SprintManagement";
 import TaskManagement from "./pages/TaskManagement";
-import Messaging from "./components/messaging/Messaging";
+// import Messaging from "./components/messaging/Messaging";
+import MessageApp from "./pages/MessagePage";
+
 import Chat from "./pages/Chat";
 const App: React.FC = () => {
   const isAuthenticated = useSelector(
@@ -64,13 +66,21 @@ const App: React.FC = () => {
             path="/messagerie"
             element={isAuthenticated ? <Messagerie /> : <Navigate to="/" />}
           /> */}
-          <Route
+          {/* <Route
             path="/messages"
-            element={isAuthenticated ? <Messaging /> : <Navigate to="/" />}
-          />
+            element={isAuthenticated ? <Chat /> : <Navigate to="/" />}
+          /> */}
           <Route
             path="/request-quote"
             element={isAuthenticated ? <QuoteRequest /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/messages"
+            element={isAuthenticated ? <MessageApp /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/messages/:conversationId"
+            element={isAuthenticated ? <MessageApp /> : <Navigate to="/" />}
           />
           <Route
             path="/task-management/:activityId"

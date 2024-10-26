@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Activity, Task } from "../types/kanban";
+import { Activity, Task } from "../types/Kanban";
 
 export const useActivities = (initialActivities: Activity[]) => {
   const [activities, setActivities] = useState<Activity[]>(initialActivities);

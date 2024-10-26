@@ -31,10 +31,10 @@ const Chat: React.FC = () => {
       socket.on("newMessage", (message: Message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
-      // dispatch(updateUserStatus({ id: userId, isOnline: false }));
+      // dispatch(updateUserStatus({ id: userId, is_online: false }));
 
-      socket.on("userStatusChange", ({ userId, isOnline }) => {
-        dispatch(updateUserStatus({ id: userId, isOnline }));
+      socket.on("userStatusChange", ({ userId, is_online }) => {
+        dispatch(updateUserStatus({ id: userId, is_online }));
       });
       console.log();
 
@@ -107,7 +107,7 @@ const Chat: React.FC = () => {
               <div key={u.id} className="flex items-center mb-2">
                 <span
                   className={`w-3 h-3 rounded-full mr-2 ${
-                    u.isOnline ? "bg-green-500" : "bg-gray-300"
+                    u.is_online ? "bg-green-500" : "bg-gray-300"
                   }`}
                 ></span>
                 <span>{u.username}</span>

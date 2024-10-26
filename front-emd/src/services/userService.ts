@@ -11,17 +11,17 @@ export const getAllUsers = async (): Promise<User[]> => {
   });
   return response.data.map((user) => ({
     ...user,
-    isOnline: user.isOnline || false,
+    is_online: user.is_online || false,
   }));
 };
 
 export const updateUserOnlineStatus = async (
   userId: number,
-  isOnline: boolean
+  is_online: boolean
 ): Promise<User> => {
   const response = await axios.put<User>(
     `${API_URL}/${userId}/status`,
-    { isOnline },
+    { is_online },
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

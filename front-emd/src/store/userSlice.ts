@@ -10,9 +10,9 @@
 // );
 
 // export const updateUserStatusThunk = createAsyncThunk<  User,
-//   { id: number; isOnline: boolean }
-// >("users/updateStatus", async ({ id, isOnline }) => {
-//   return await updateUserOnlineStatus(id, isOnline);
+//   { id: number; is_online: boolean }
+// >("users/updateStatus", async ({ id, is_online }) => {
+//   return await updateUserOnlineStatus(id, is_online);
 // });
 
 // interface UserState {
@@ -33,13 +33,13 @@
 //   reducers: {
 //     updateUserStatus: (
 //       state,
-//       action: PayloadAction<{ id: number; isOnline: boolean }>
+//       action: PayloadAction<{ id: number; is_online: boolean }>
 //     ) => {
 //       const index = state.users.findIndex(
 //         (user) => user.id === action.payload.id
 //       );
 //       if (index !== -1) {
-//         state.users[index].isOnline = action.payload.isOnline;
+//         state.users[index].is_online = action.payload.is_online;
 //       }
 //     },
 //   },
@@ -74,9 +74,9 @@ export const fetchUsers = createAsyncThunk<User[]>(
 
 export const updateUserStatus = createAsyncThunk<
   User,
-  { id: number; isOnline: boolean }
->("users/updateStatus", async ({ id, isOnline }) => {
-  return await updateUserOnlineStatus(id, isOnline);
+  { id: number; is_online: boolean }
+>("users/updateStatus", async ({ id, is_online }) => {
+  return await updateUserOnlineStatus(id, is_online);
 });
 
 interface UserState {

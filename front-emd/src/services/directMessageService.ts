@@ -1,16 +1,107 @@
+// import api from "./api";
+// import { AxiosResponse } from "axios";
+
+// const handleApiError = (error: any) => {
+//   if (error.response?.status === 401) {
+//     throw new Error("Authentication required");
+//   }
+//   throw error;
+// };
+
+// export const getContactList = async () => {
+//   try {
+//     const response: AxiosResponse = await api.get("/messages/contacts");
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const sendMessage = async (receiverId: string, content: string) => {
+//   try {
+//     const response = await api.post("/messages/send", { receiverId, content });
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const getConversations = async () => {
+//   try {
+//     const response = await api.get("/messages/conversations");
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const getMessagesFromUser = async (userId: string) => {
+//   try {
+//     const response = await api.get(`/messages/${userId}`);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const getUserContactById = async (userId: string) => {
+//   try {
+//     const response = await api.get(`/messages/contact/${userId}`);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const markMessagesAsRead = async (userId: string) => {
+//   try {
+//     const response = await api.put(`/messages/read/${userId}`);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const getUnreadMessageCount = async () => {
+//   try {
+//     const response = await api.get("/messages/count/unread");
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
+
+// export const deleteMessage = async (messageId: string) => {
+//   try {
+//     const response = await api.delete(`/messages/${messageId}`);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// };
 import api from "./api";
 
-export const getContactList = () => api.get("/api/messages/contacts");
-export const sendMessage = (receiverId: string, content: string) =>
-  api.post("/api/messages/send", { receiverId, content });
-export const getConversations = () => api.get("/api/messages/conversations");
-export const getMessagesFromUser = (userId: string) =>
-  api.get(`/api/messages/${userId}`);
-export const getUserContactById = (userId: string) =>
-  api.get(`/api/messages/contact/${userId}`);
-export const markMessagesAsRead = (userId: string) =>
-  api.put(`/api/messages/read/${userId}`);
-export const getUnreadMessageCount = () =>
-  api.get("/api/messages/count/unread");
-export const deleteMessage = (messageId: string) =>
-  api.delete(`/api/messages/${messageId}`);
+export const getContactList = async () => {
+  const response = await api.get("/messages/contacts");
+  return response.data;
+};
+
+export const sendMessage = async (receiverId: string, content: string) => {
+  const response = await api.post("/messages/send", { receiverId, content });
+  return response.data;
+};
+
+export const getConversations = async () => {
+  const response = await api.get("/messages/conversations");
+  return response.data;
+};
+
+export const getMessagesFromUser = async (userId: string) => {
+  const response = await api.get(`/messages/${userId}`);
+  return response.data;
+};
+
+export const markMessagesAsRead = async (userId: string) => {
+  const response = await api.put(`/messages/read/${userId}`);
+  return response.data;
+};
