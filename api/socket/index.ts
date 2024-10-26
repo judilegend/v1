@@ -1,35 +1,73 @@
-import { Server as SocketServer } from "socket.io";
-import http from "http";
+import { Server } from "socket.io";
+import { Server as HttpServer } from "http";
+import { verifyToken } from "../middleware/authMiddleware";
 
-export function setupSocketServer(server: http.Server) {
-  const io = new SocketServer(server, {
+export const setupSocketServer = (server: HttpServer) => {
+  const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "http://localhost:5173", // Match your frontend origin
       methods: ["GET", "POST"],
+      credentials: true,
+      allowedHeaders: ["Authorization"],
     },
   });
 
+  const userSockets = new Map();
+
+  io.use(async (socket, next) => {
+    const token = socket.handshake.auth.token;
+    try {
+      const user = await verifyToken(token);
+      socket.data.user = user;
+      next();
+    } catch (error) {
+      next(new Error("Authentication error"));
+    }
+  });
+
   io.on("connection", (socket) => {
-    console.log("New client connected");
+    const userId = socket.data.user.id;
+    userSockets.set(userId, socket.id);
 
-    socket.on("join_room", (roomId) => {
-      socket.join(roomId);
-      console.log(`User joined room: ${roomId}`);
+    // Handle user online status
+    socket.broadcast.emit("userStatus", { userId, is_online: true });
+
+    // Join personal room
+    socket.join(`user_${userId}`);
+
+    // Handle private messages
+    socket.on("privateMessage", async (data) => {
+      const { receiverId, content } = data;
+      const receiverSocketId = userSockets.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", {
+          senderId: userId,
+          content,
+          timestamp: new Date(),
+        });
+      }
     });
 
-    socket.on("leave_room", (roomId) => {
-      socket.leave(roomId);
-      console.log(`User left room: ${roomId}`);
+    // Handle typing status
+    socket.on("typing", (data) => {
+      const { receiverId, isTyping } = data;
+      const receiverSocketId = userSockets.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("userTyping", {
+          userId,
+          isTyping,
+        });
+      }
     });
 
-    socket.on("send_message", (data) => {
-      io.to(data.roomId).emit("receive_message", data);
-    });
-
+    // Handle disconnection
     socket.on("disconnect", () => {
-      console.log("Client disconnected");
+      userSockets.delete(userId);
+      socket.broadcast.emit("userStatus", { userId, is_online: false });
     });
   });
 
   return io;
-}
+};
