@@ -8,6 +8,23 @@ interface AuthRequest extends Request {
     role: string;
   };
 }
+// Add verifyToken function for socket authentication
+export const verifyToken = async (token: string): Promise<any> => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    return decoded;
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
+};
+
+interface AuthRequest extends Request {
+  user?: {
+    id: number;
+    email: string;
+    role: string;
+  };
+}
 
 // Middleware d'authentification
 export const authenticate = async (

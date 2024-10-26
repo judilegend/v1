@@ -4,6 +4,7 @@ import { authenticate } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
+// Base path is already /api/messages from server.ts
 router.get(
   "/contacts",
   authenticate,
@@ -40,5 +41,26 @@ router.delete(
   authenticate,
   directMessageController.deleteMessage
 );
+router.get(
+  "/messages/:id",
+  authenticate,
+  directMessageController.recupAllMessagesFromUser
+);
+router.put(
+  "/read/:id",
+  authenticate,
+  directMessageController.setLuAllMessageByUserId
+);
 
+//route avec procedure stockee
+router.get(
+  "/messages/:id",
+  authenticate,
+  directMessageController.recupAllMessagesFromUser
+);
+router.put(
+  "/read/:id",
+  authenticate,
+  directMessageController.setLuAllMessageByUserId
+);
 export default router;
