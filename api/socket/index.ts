@@ -1,11 +1,12 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 import { verifyToken } from "../middleware/authMiddleware";
+import * as directMessageService from "../services/directMessageService";
 
 export const setupSocketServer = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // Match your frontend origin
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
       credentials: true,
       allowedHeaders: ["Authorization"],
@@ -29,31 +30,45 @@ export const setupSocketServer = (server: HttpServer) => {
     const userId = socket.data.user.id;
     userSockets.set(userId, socket.id);
 
-    // Handle user online status
-    socket.broadcast.emit("userStatus", { userId, is_online: true });
-
-    // Join personal room
-    socket.join(`user_${userId}`);
+    // Broadcast user online status
+    socket.broadcast.emit("userStatus", { userId, isOnline: true });
 
     // Handle private messages
     socket.on("privateMessage", async (data) => {
       const { receiverId, content } = data;
-      const receiverSocketId = userSockets.get(receiverId);
+      try {
+        const message = await directMessageService.sendMessage(
+          userId.toString(),
+          receiverId.toString(),
+          content
+        );
 
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("newMessage", {
-          senderId: userId,
-          content,
-          timestamp: new Date(),
-        });
+        const formattedMessage = {
+          ...message?.toJSON(),
+          isSender: true,
+        };
+
+        // Send to receiver if online
+        const receiverSocketId = userSockets.get(parseInt(receiverId));
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("newMessage", {
+            ...formattedMessage,
+            isSender: false,
+          });
+        }
+
+        // Send confirmation back to sender
+        socket.emit("newMessage", formattedMessage);
+      } catch (error) {
+        console.error("Error sending message:", error);
+        socket.emit("messageError", { error: "Failed to send message" });
       }
     });
 
     // Handle typing status
     socket.on("typing", (data) => {
       const { receiverId, isTyping } = data;
-      const receiverSocketId = userSockets.get(receiverId);
-
+      const receiverSocketId = userSockets.get(parseInt(receiverId));
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("userTyping", {
           userId,
@@ -65,7 +80,7 @@ export const setupSocketServer = (server: HttpServer) => {
     // Handle disconnection
     socket.on("disconnect", () => {
       userSockets.delete(userId);
-      socket.broadcast.emit("userStatus", { userId, is_online: false });
+      socket.broadcast.emit("userStatus", { userId, isOnline: false });
     });
   });
 

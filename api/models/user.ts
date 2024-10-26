@@ -12,6 +12,7 @@ class User extends Model {
   public is_online!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  public last_activity!: Date;
 
   public async comparePassword(candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
@@ -50,6 +51,11 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+    },
+    last_activity: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

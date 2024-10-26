@@ -1,25 +1,23 @@
 import React, { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../../store";
 import debounce from "lodash/debounce";
 import { getContactList } from "../../services/directMessageService";
 
 interface SearchUsersProps {
-  onSelectUser?: (user: any) => void;
+  onSelectContact: (contactId: string | null) => void;
 }
-
 interface Contact {
   id: number;
   name: string;
   email: string;
   isOnline: boolean;
 }
-
-const SearchUsers: React.FC<SearchUsersProps> = ({ onSelectUser }) => {
+const SearchUsers: React.FC<SearchUsersProps> = ({ onSelectContact }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<Contact[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
 
   const debouncedSearch = useCallback(
     debounce(async (term: string) => {
@@ -54,6 +52,11 @@ const SearchUsers: React.FC<SearchUsersProps> = ({ onSelectUser }) => {
     setIsSearching(true);
     debouncedSearch(value);
   };
+  const handleSelectUser = (userId: string) => {
+    onSelectContact(userId);
+    setSearchTerm("");
+    setSearchResults([]);
+  };
 
   return (
     <div className="p-4 border-b">
@@ -73,18 +76,15 @@ const SearchUsers: React.FC<SearchUsersProps> = ({ onSelectUser }) => {
       </div>
 
       {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          {searchResults.map((user: Contact) => (
+        <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg">
+          {searchResults.map((user) => (
             <div
               key={user.id}
-              onClick={() => onSelectUser?.(user)}
-              className="p-3 hover:bg-gray-50 cursor-pointer"
+              className="p-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => handleSelectUser(user.id.toString())}
             >
               <div className="font-medium">{user.name}</div>
               <div className="text-sm text-gray-500">{user.email}</div>
-              <div className="text-xs text-gray-400">
-                {user.isOnline ? "Online" : "Offline"}
-              </div>
             </div>
           ))}
         </div>

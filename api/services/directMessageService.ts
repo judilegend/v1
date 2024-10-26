@@ -30,15 +30,37 @@ export const sendMessage = async (
   receiverId: string,
   content: string
 ) => {
-  const message = await DirectMessage.create({
-    senderId,
-    receiverId,
-    content,
-    read: false,
-  });
+  try {
+    const message = await DirectMessage.create({
+      senderId: parseInt(senderId),
+      receiverId: parseInt(receiverId),
+      content,
+      read: false,
+    });
 
-  return message;
+    // Fetch the created message with associated user data
+    const createdMessage = await DirectMessage.findByPk(message.id, {
+      include: [
+        {
+          model: User,
+          as: "sender",
+          attributes: ["id", "username", "last_activity"],
+        },
+        {
+          model: User,
+          as: "receiver",
+          attributes: ["id", "username", "last_activity"],
+        },
+      ],
+    });
+
+    return createdMessage;
+  } catch (error) {
+    console.error("Error in sendMessage service:", error);
+    throw new Error("Failed to create message");
+  }
 };
+
 ///utilisation procedure stockee fonction
 export const getMessagesBetweenUsers = async (
   userId1: string,
@@ -48,7 +70,14 @@ export const getMessagesBetweenUsers = async (
     userId1,
     userId2
   );
-  return messages[0]; // First element contains the result set
+
+  // Return empty array if no messages found
+  if (!messages || !Array.isArray(messages)) {
+    return [];
+  }
+
+  // Return the messages array directly
+  return messages;
 };
 
 export const markMessagesAsRead = async (

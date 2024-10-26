@@ -44,16 +44,21 @@ class DirectMessage extends Model {
     limit = 50,
     offset = 0
   ): Promise<ConversationMessage[]> {
-    const [results] = await sequelize.query(
-      "CALL sp_get_conversation(:user1Id, :user2Id, :limit, :offset)",
-      {
-        replacements: { user1Id, user2Id, limit, offset },
-        type: QueryTypes.RAW,
-      }
-    );
-    return results as ConversationMessage[];
-  }
+    try {
+      const [results] = await sequelize.query(
+        "CALL sp_get_conversation(:user1Id, :user2Id, :limit, :offset)",
+        {
+          replacements: { user1Id, user2Id, limit, offset },
+          type: QueryTypes.RAW,
+        }
+      );
 
+      return Array.isArray(results) ? (results as ConversationMessage[]) : [];
+    } catch (error) {
+      console.error("Error in getConversationUsingProc:", error);
+      return [];
+    }
+  }
   static async markMessagesReadUsingProc(
     receiverId: string,
     senderId: string

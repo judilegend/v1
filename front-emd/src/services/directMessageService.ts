@@ -87,7 +87,10 @@ export const getContactList = async () => {
 };
 
 export const sendMessage = async (receiverId: string, content: string) => {
-  const response = await api.post("/messages/send", { receiverId, content });
+  const response = await api.post("/messages/send", {
+    receiverId: receiverId,
+    content: content,
+  });
   return response.data;
 };
 

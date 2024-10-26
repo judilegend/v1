@@ -1,53 +1,4 @@
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import * as directMessageService from "../../services/directMessageService";
-
-// export const fetchContacts = createAsyncThunk(
-//   "directMessage/fetchContacts",
-//   directMessageService.getContactList
-// );
-// export const sendDirectMessage = createAsyncThunk(
-//   "directMessage/sendMessage",
-//   ({ receiverId, content }: { receiverId: string; content: string }) =>
-//     directMessageService.sendMessage(receiverId, content)
-// );
-// export const fetchConversations = createAsyncThunk(
-//   "directMessage/fetchConversations",
-//   directMessageService.getConversations
-// );
-// export const fetchMessagesFromUser = createAsyncThunk(
-//   "directMessage/fetchMessagesFromUser",
-//   (userId: string) => directMessageService.getMessagesFromUser(userId)
-// );
-
-// const directMessageSlice = createSlice({
-//   name: "directMessage",
-//   initialState: {
-//     contacts: [],
-//     conversations: [],
-//     currentConversation: [],
-//     status: "idle",
-//     error: null,
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(fetchContacts.fulfilled, (state, action) => {
-//         state.contacts = action.payload.data;
-//       })
-//       .addCase(fetchConversations.fulfilled, (state, action) => {
-//         state.conversations = action.payload.data;
-//       })
-//       .addCase(fetchMessagesFromUser.fulfilled, (state, action) => {
-//         state.currentConversation = action.payload.data;
-//       })
-//       .addCase(sendDirectMessage.fulfilled, (state, action) => {
-//         state.currentConversation = [...state.currentConversation, action.payload.data as never];
-//       });
-//   }
-// });
-
-// export default directMessageSlice.reducer;
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import * as directMessageService from "../../services/directMessageService";
 
 interface Message {
@@ -57,15 +8,26 @@ interface Message {
   receiverId: number;
   createdAt: string;
   read: boolean;
+  isSender?: boolean;
+}
+
+interface Contact {
+  id: number;
+  username: string;
+  email: string;
+  is_online: boolean;
+  lastMessage?: Message;
+  unreadCount: number;
 }
 
 interface DirectMessageState {
-  contacts: any[];
+  contacts: Contact[];
   conversations: any[];
   currentConversation: Message[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   selectedContact: string | null;
+  typingUsers: Record<string, boolean>;
 }
 
 const initialState: DirectMessageState = {
@@ -75,11 +37,15 @@ const initialState: DirectMessageState = {
   status: "idle",
   error: null,
   selectedContact: null,
+  typingUsers: {},
 };
 
 export const fetchContacts = createAsyncThunk(
   "directMessage/fetchContacts",
-  directMessageService.getContactList
+  async () => {
+    const response = await directMessageService.getContactList();
+    return response;
+  }
 );
 
 export const sendDirectMessage = createAsyncThunk(
@@ -95,7 +61,10 @@ export const sendDirectMessage = createAsyncThunk(
 
 export const fetchConversations = createAsyncThunk(
   "directMessage/fetchConversations",
-  directMessageService.getConversations
+  async () => {
+    const response = await directMessageService.getConversations();
+    return response;
+  }
 );
 
 export const fetchMessagesFromUser = createAsyncThunk(
@@ -110,17 +79,52 @@ const directMessageSlice = createSlice({
   name: "directMessage",
   initialState,
   reducers: {
-    setSelectedContact: (state, action) => {
+    setSelectedContact: (state, action: PayloadAction<string>) => {
       state.selectedContact = action.payload;
     },
-    addNewMessage: (state, action) => {
-      state.currentConversation.push(action.payload);
+    addNewMessage: (state, action: PayloadAction<Message>) => {
+      const message = action.payload;
+      state.currentConversation.push(message);
+
+      const contactId = message.senderId.toString();
+      const contact = state.contacts.find((c) => c.id.toString() === contactId);
+
+      if (contact) {
+        contact.lastMessage = message;
+        if (!message.isSender) {
+          contact.unreadCount = (contact.unreadCount || 0) + 1;
+        }
+      }
     },
-    updateMessageReadStatus: (state, action) => {
-      const { senderId } = action.payload;
+    updateOnlineStatus: (
+      state,
+      action: PayloadAction<{ userId: string; isOnline: boolean }>
+    ) => {
+      const { userId, isOnline } = action.payload;
+      const contact = state.contacts.find((c) => c.id.toString() === userId);
+      if (contact) {
+        contact.is_online = isOnline;
+      }
+    },
+    updateTypingStatus: (
+      state,
+      action: PayloadAction<{ userId: string; isTyping: boolean }>
+    ) => {
+      state.typingUsers[action.payload.userId] = action.payload.isTyping;
+    },
+    updateMessageReadStatus: (
+      state,
+      action: PayloadAction<{ senderId: string; receiverId: string }>
+    ) => {
       state.currentConversation = state.currentConversation.map((message) =>
-        message.senderId === senderId ? { ...message, read: true } : message
+        message.senderId.toString() === action.payload.senderId &&
+        message.receiverId.toString() === action.payload.receiverId
+          ? { ...message, read: true }
+          : message
       );
+    },
+    clearCurrentConversation: (state) => {
+      state.currentConversation = [];
     },
   },
   extraReducers: (builder) => {
@@ -141,10 +145,20 @@ const directMessageSlice = createSlice({
       })
       .addCase(sendDirectMessage.fulfilled, (state, action) => {
         state.currentConversation.push(action.payload);
+      })
+      .addCase(fetchConversations.fulfilled, (state, action) => {
+        state.conversations = action.payload.conversations;
       });
   },
 });
 
-export const { setSelectedContact, addNewMessage, updateMessageReadStatus } =
-  directMessageSlice.actions;
+export const {
+  setSelectedContact,
+  addNewMessage,
+  updateOnlineStatus,
+  updateTypingStatus,
+  updateMessageReadStatus,
+  clearCurrentConversation,
+} = directMessageSlice.actions;
+
 export default directMessageSlice.reducer;

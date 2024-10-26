@@ -24,9 +24,14 @@ export const recupAllMessagesFromUser = async (
       req.user.id,
       id
     );
-    res.json({ messages });
+
+    return res.status(200).json({
+      messages: messages || [],
+      success: true,
+    });
   } catch (error) {
-    res.status(500).json({
+    console.error("Error fetching messages:", error);
+    return res.status(500).json({
       error: "An error occurred while fetching messages",
       details: error instanceof Error ? error.message : "Unknown error",
     });
@@ -78,18 +83,28 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized" });
     }
+
     const message = await directMessageService.sendMessage(
-      req.user.id,
+      req.user.id.toString(),
       receiverId,
       content
     );
-    res.json(message);
-    return message;
+
+    // Return formatted message response
+    return res.status(200).json({
+      id: message.id,
+      content: message.content,
+      senderId: message.senderId,
+      receiverId: message.receiverId,
+      createdAt: message.createdAt,
+      read: message.read,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while sending the message" });
-    return null;
+    console.error("Error sending message:", error);
+    return res.status(500).json({
+      error: "Failed to send message",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
