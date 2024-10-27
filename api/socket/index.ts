@@ -9,7 +9,6 @@ export const setupSocketServer = (server: HttpServer) => {
       origin: "http://localhost:5173",
       methods: ["GET", "POST"],
       credentials: true,
-      allowedHeaders: ["Authorization"],
     },
   });
 
@@ -29,11 +28,10 @@ export const setupSocketServer = (server: HttpServer) => {
   io.on("connection", (socket) => {
     const userId = socket.data.user.id;
     userSockets.set(userId, socket.id);
+    socket.join(`user_${userId}`);
 
-    // Broadcast user online status
     socket.broadcast.emit("userStatus", { userId, isOnline: true });
 
-    // Handle private messages
     socket.on("privateMessage", async (data) => {
       const { receiverId, content } = data;
       try {
@@ -43,41 +41,23 @@ export const setupSocketServer = (server: HttpServer) => {
           content
         );
 
-        const formattedMessage = {
-          ...message?.toJSON(),
-          isSender: true,
-        };
-
-        // Send to receiver if online
         const receiverSocketId = userSockets.get(parseInt(receiverId));
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("newMessage", {
-            ...formattedMessage,
+            ...message.toJSON(),
             isSender: false,
           });
         }
 
-        // Send confirmation back to sender
-        socket.emit("newMessage", formattedMessage);
+        socket.emit("newMessage", {
+          ...message.toJSON(),
+          isSender: true,
+        });
       } catch (error) {
-        console.error("Error sending message:", error);
         socket.emit("messageError", { error: "Failed to send message" });
       }
     });
 
-    // Handle typing status
-    socket.on("typing", (data) => {
-      const { receiverId, isTyping } = data;
-      const receiverSocketId = userSockets.get(parseInt(receiverId));
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("userTyping", {
-          userId,
-          isTyping,
-        });
-      }
-    });
-
-    // Handle disconnection
     socket.on("disconnect", () => {
       userSockets.delete(userId);
       socket.broadcast.emit("userStatus", { userId, isOnline: false });

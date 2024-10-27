@@ -2,29 +2,36 @@ import { Op } from "sequelize";
 import DirectMessage from "../models/direct_message";
 import User from "../models/user";
 
-export const getContactList = async (userId: string) => {
-  try {
-    const users = await User.findAll({
-      where: {
-        id: { [Op.ne]: parseInt(userId) },
-      },
-      attributes: ["id", "email", "username", "is_online"], // Updated field list to match User model
-    });
+/**
+ * Direct Message Service
+ * Handles all business logic for direct messaging functionality
+ */
+// export const getContactList = async (userId: string) => {
+//   try {
+//     const users = await User.findAll({
+//       where: {
+//         id: { [Op.ne]: parseInt(userId) },
+//       },
+//       attributes: ["id", "email", "username", "is_online"],
+//     });
 
-    return {
-      contacts: users.map((user) => ({
-        id: user.id,
-        name: user.username, // Map username to name if needed
-        email: user.email,
-        is_online: user.is_online,
-      })),
-    };
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-    throw error;
-  }
-};
+//     return {
+//       contacts: users.map((user) => ({
+//         id: user.id,
+//         name: user.username,
+//         email: user.email,
+//         is_online: user.is_online,
+//       })),
+//     };
+//   } catch (error) {
+//     console.error("Error fetching contacts:", error);
+//     throw error;
+//   }
+// };
 
+/**
+ * Sends a new message using stored procedure
+ */
 export const sendMessage = async (
   senderId: string,
   receiverId: string,
@@ -38,30 +45,16 @@ export const sendMessage = async (
       read: false,
     });
 
-    // Fetch the created message with associated user data
-    const createdMessage = await DirectMessage.findByPk(message.id, {
-      include: [
-        {
-          model: User,
-          as: "sender",
-          attributes: ["id", "username", "last_activity"],
-        },
-        {
-          model: User,
-          as: "receiver",
-          attributes: ["id", "username", "last_activity"],
-        },
-      ],
-    });
-
-    return createdMessage;
+    return message;
   } catch (error) {
     console.error("Error in sendMessage service:", error);
     throw new Error("Failed to create message");
   }
 };
 
-///utilisation procedure stockee fonction
+/**
+ * Gets messages between two users using stored procedure
+ */
 export const getMessagesBetweenUsers = async (
   userId1: string,
   userId2: string
@@ -70,27 +63,26 @@ export const getMessagesBetweenUsers = async (
     userId1,
     userId2
   );
-
-  // Return empty array if no messages found
-  if (!messages || !Array.isArray(messages)) {
-    return [];
-  }
-
-  // Return the messages array directly
-  return messages;
+  return { messages };
 };
 
+/**
+ * Marks messages as read using stored procedure
+ */
 export const markMessagesAsRead = async (
   userId: string,
   otherUserId: string
 ) => {
   await DirectMessage.markMessagesReadUsingProc(userId, otherUserId);
 };
+
+/**
+ * Gets all conversations for a user using view
+ */
 export const getConversations = async (userId: string) => {
   const latestMessages = await DirectMessage.getLatestMessages();
   const unreadCounts = await DirectMessage.getUnreadCount(userId);
 
-  // Process and format the conversations
   const conversations = latestMessages.reduce((acc: any, message: any) => {
     const otherUserId =
       message.sender_id === parseInt(userId)
@@ -113,40 +105,41 @@ export const getConversations = async (userId: string) => {
   return { conversations: Object.values(conversations) };
 };
 
-export const countUnreadMessages = async (userId: string) => {
-  const count = await DirectMessage.count({
-    where: {
-      receiverId: userId,
-      read: false,
-    },
-  });
-  return { count };
+export const getContactList = async (userId: string) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        id: { [Op.ne]: parseInt(userId) },
+      },
+      attributes: ["id", "email", "username", "is_online"],
+      order: [["username", "ASC"]],
+    });
+
+    return users.map((user) => ({
+      id: user.id,
+      name: user.username,
+      email: user.email,
+      is_online: user.is_online,
+    }));
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+    throw error;
+  }
 };
 
-export const deleteMessage = async (messageId: string, userId: string) => {
-  const message = await DirectMessage.findOne({
-    where: {
-      id: messageId,
-      senderId: userId,
-    },
-  });
+export const getAllUsers = async (currentUserId: string) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        id: { [Op.ne]: parseInt(currentUserId) },
+      },
+      attributes: ["id", "username", "email", "is_online"],
+      order: [["username", "ASC"]],
+    });
 
-  if (!message) {
-    throw new Error("Message not found or unauthorized");
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
   }
-
-  await message.destroy();
-  return { success: true };
-};
-
-export const getUserContactById = async (userId: string) => {
-  const user = await User.findByPk(userId, {
-    attributes: ["id", "name", "email", "is_online"],
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  return { contact: user };
 };

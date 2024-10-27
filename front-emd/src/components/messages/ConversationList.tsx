@@ -1,68 +1,59 @@
 import React from "react";
-import { formatTime } from "../../utils/dateUtils";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
-interface Message {
-  id: number;
-  content: string;
-  createdAt: string | Date;
-}
-
-interface Conversation {
+interface Contact {
   id: number;
   name: string;
+  email: string;
   is_online: boolean;
-  lastMessage?: Message;
-  unreadCount: number;
 }
 
 interface ConversationListProps {
-  conversations: Conversation[];
   selectedContact: string | null;
   onSelectContact: (contactId: string) => void;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({
-  conversations,
   selectedContact,
   onSelectContact,
 }) => {
-  const renderLastMessageTime = (lastMessage?: Message) => {
-    if (!lastMessage?.createdAt) return null;
-    const formattedTime = formatTime(lastMessage.createdAt);
-    return formattedTime ? (
-      <div className="text-xs text-gray-400">{formattedTime}</div>
-    ) : null;
-  };
+  const { contacts = [] } = useSelector(
+    (state: RootState) => state.directMessage
+  );
+
+  if (contacts.length === 0) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-gray-500">No contacts available</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {conversations.map((conversation) => (
+      {contacts.map((contact) => (
         <div
-          key={conversation.id}
-          className={`flex items-center p-4 border-b hover:bg-gray-50 cursor-pointer ${
-            selectedContact === conversation.id.toString() ? "bg-blue-50" : ""
-          }`}
-          onClick={() => onSelectContact(conversation.id.toString())}
+          key={contact.id}
+          className={`flex items-center p-4 border-b hover:bg-gray-50 cursor-pointer
+            ${selectedContact === contact.id.toString() ? "bg-blue-50" : ""}
+          `}
+          onClick={() => onSelectContact(contact.id.toString())}
         >
           <div className="relative">
+            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+              {contact.name[0].toUpperCase()}
+            </div>
             <div
-              className={`w-2 h-2 absolute right-0 bottom-0 rounded-full ${
-                conversation.is_online ? "bg-green-500" : "bg-gray-400"
-              }`}
+              className={`absolute -right-1 -bottom-1 w-3 h-3 rounded-full border-2 border-white
+                ${contact.is_online ? "bg-green-500" : "bg-gray-400"}
+              `}
             />
           </div>
-          <div className="flex-1 ml-3">
-            <h3 className="font-semibold">{conversation.name}</h3>
-            <p className="text-sm text-gray-500 truncate">
-              {conversation.lastMessage?.content}
-            </p>
+          <div className="ml-3">
+            <h3 className="font-semibold">{contact.name}</h3>
+            <p className="text-sm text-gray-500">{contact.email}</p>
           </div>
-          {renderLastMessageTime(conversation.lastMessage)}
-          {conversation.unreadCount > 0 && (
-            <div className="ml-2 bg-blue-500 text-white rounded-full px-2 py-1 text-xs">
-              {conversation.unreadCount}
-            </div>
-          )}
         </div>
       ))}
     </div>

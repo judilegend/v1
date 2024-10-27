@@ -5,17 +5,13 @@ import { RootState } from "../store";
 import {
   addNewMessage,
   updateOnlineStatus,
-  updateTypingStatus,
-  updateMessageReadStatus,
+  updateUnreadCount,
 } from "../store/slices/directMessageSlice";
 
 export const useSocket = () => {
   const socketRef = useRef<Socket | null>(null);
   const dispatch = useDispatch();
   const { token } = useSelector((state: RootState) => state.auth);
-  const { selectedContact } = useSelector(
-    (state: RootState) => state.directMessage
-  );
 
   useEffect(() => {
     if (token && !socketRef.current) {
@@ -34,16 +30,12 @@ export const useSocket = () => {
         dispatch(addNewMessage(message));
       });
 
-      socketRef.current.on("messageRead", (data) => {
-        dispatch(updateMessageReadStatus(data));
+      socketRef.current.on("messageRead", ({ senderId }) => {
+        dispatch(updateUnreadCount({ userId: senderId }));
       });
 
       socketRef.current.on("userStatus", ({ userId, isOnline }) => {
         dispatch(updateOnlineStatus({ userId, isOnline }));
-      });
-
-      socketRef.current.on("userTyping", ({ userId, isTyping }) => {
-        dispatch(updateTypingStatus({ userId, isTyping }));
       });
 
       socketRef.current.on("connect_error", (error) => {
